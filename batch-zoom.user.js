@@ -7,7 +7,6 @@
 // @match        https://*/manage/database/acquire
 // @match        https://*/manage/lookup/* 
 // @downloadURL  https://github.com/FranzSpohr/Batch-Acquire-Zoom/blob/master/batch-zoom.user.js
-// @updateURL    https://github.com/FranzSpohr/Batch-Acquire-Zoom/blob/master/batch-zoom.user.js
 // @grant        none
 // ==/UserScript==
 
