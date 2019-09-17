@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Batch Acquire Zoom
 // @namespace    http://tampermonkey.net/
-// @version      1.7
+// @version      2.0
 // @description  For Slate Batch Acquire; zoom in and out with "+" and "-" keys on the numberpad. Needs Tampermonkey or Greasemonkey
 // @author       Theodore Ma
 // @match        https://*/manage/database/acquire
