@@ -2,7 +2,7 @@
 // @name         Batch Acquire Zoom
 // @namespace    http://tampermonkey.net/
 // @version      2.5
-// @description  For Slate Batch Acquire; zoom in and out with "+" and "-" keys on the numberpad. Needs Tampermonkey or Greasemonkey
+// @description  For Slate Batch Acquire; zoom in and out with "+" and "-" keys on the numberpad. Needs Tampermonkey for Chrome or Greasemonkey for Firefox. 
 // @author       Theodore Ma
 // @match        https://*/manage/database/acquire
 // @match        https://*/manage/lookup/* 
