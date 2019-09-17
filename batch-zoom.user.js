@@ -6,6 +6,8 @@
 // @author       Theodore Ma
 // @match        https://*/manage/database/acquire
 // @match        https://*/manage/lookup/*
+// @updateURL   
+// @downloadURL
 // @grant        none
 // ==/UserScript==
 
