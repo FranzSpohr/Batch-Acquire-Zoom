@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      2.7
 // @description  For Slate Batch Acquire; zoom-in with "=" and zoom-out with "-" on your keyboard next to the number row. "+" and "-" keys on the numberpad is also an option. Needs Tampermonkey for Chrome or Greasemonkey for Firefox. 
-// @author       Theodore Ma
+// @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/database/acquire
 // @match        https://*/manage/lookup/* 
 // @updateURL    https://github.com/FranzSpohr/Batch-Acquire-Zoom/blob/master/batch-zoom.user.js
