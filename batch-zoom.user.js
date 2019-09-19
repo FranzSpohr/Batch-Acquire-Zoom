@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Batch Acquire Zoom
 // @namespace    http://tampermonkey.net/
-// @version      2.5
+// @version      2.7
 // @description  For Slate Batch Acquire; zoom in and out with "+" and "-" keys on the numberpad. Needs Tampermonkey for Chrome or Greasemonkey for Firefox. 
 // @author       Theodore Ma
 // @match        https://*/manage/database/acquire
@@ -19,7 +19,7 @@ var ZOOMED_DPI3 = 180;
 var ZOOMED_DPI4 = 216;
 
 function ZoomIn (event) {
-    if (event.code == 'NumpadAdd') {
+    if (event.code == 'NumpadAdd'||event.code == 'Equal') {
         const elements = document.querySelectorAll('.batch_page_container > img');
         elements.forEach(function(el) {
             if (el.src.includes(`z=${ZOOMED_DPI}`)) {
@@ -36,7 +36,7 @@ function ZoomIn (event) {
 }
 
 function ZoomOut (event) {
-    if (event.code == 'NumpadSubtract') {
+    if (event.code == 'NumpadSubtract'||event.code == 'Minus') {
         const elements = document.querySelectorAll('.batch_page_container > img');
         elements.forEach(function(el) {
             if (el.src.includes(`z=${ZOOMED_DPI4}`)) {
