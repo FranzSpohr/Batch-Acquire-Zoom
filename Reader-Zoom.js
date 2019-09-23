@@ -9,5 +9,6 @@
 // @grant        none
 // ==/UserScript==
 
-window.addEventListener('keydown', ZoomIn);
-window.addEventListener('keydown', ZoomOut);
+var zoom_levels = [72,96,144,168,192]
+var zoom_min = 0
+var zoom_max = 4
