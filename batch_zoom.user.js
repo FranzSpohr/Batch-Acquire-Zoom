@@ -8,7 +8,6 @@
 // @match        https://*/manage/lookup/*
 // @updateURL    https://github.com/FranzSpohr/Slate_Tools/blob/master/batch_zoom.user.js
 // @grant        none
-// @require      https://code.jquery.com/jquery-3.3.1.min.js
 // ==/UserScript==
 
 var i = 0
