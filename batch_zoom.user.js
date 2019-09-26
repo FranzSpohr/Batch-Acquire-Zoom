@@ -6,6 +6,7 @@
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/database/acquire
 // @match        https://*/manage/lookup/*
+// @match        https://*/manage/inbox/*
 // @updateURL    https://github.com/FranzSpohr/Slate_Tools/blob/master/batch_zoom.user.js
 // @grant        none
 // ==/UserScript==
