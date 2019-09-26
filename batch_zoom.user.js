@@ -2,7 +2,7 @@
 // @name         Batch Acquire Zoom
 // @namespace    http://tampermonkey.net/
 // @version      4.0.1
-// @description  For Slate Batch Acquire; to zoom-in: press left mouse click, "=", or "+" on numpad. To zoom-out: press right mouse click, "-", or "-" on numpad. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
+// @description  For Slate Batch Acquire; to zoom-in: press left mouse click, "=", or "+" on numpad. To zoom-out: press right mouse click, "-", or "-" on numpad. Needs Tampermonkey for Chrome or Greasemonkey for Firefox. Based on code by Jamie Davis @ UMich.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/database/acquire
 // @match        https://*/manage/lookup/*
