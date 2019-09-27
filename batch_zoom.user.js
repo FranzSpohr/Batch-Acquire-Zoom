@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Batch Acquire Zoom
 // @namespace    http://tampermonkey.net/
-// @version      4.0.2
-// @description  For Slate Batch Acquire. Needs Tampermonkey for Chrome or Greasemonkey for Firefox. See readme for more info. 
+// @version      4.0.3
+// @description  For Slate Batch Acquire. Needs Tampermonkey for Chrome or Greasemonkey for Firefox. See readme for more info.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/database/acquire
 // @match        https://*/manage/lookup/*
@@ -12,6 +12,7 @@
 // ==/UserScript==
 
 var i = 0
+var ListenerAdded = false
 var Zoom_Levels = [72, 108, 144, 180, 216];
 
 window.addEventListener('keydown', Toggle_Zoom, true)
@@ -46,17 +47,23 @@ function Toggle_Zoom (event) {
 }
 
 function Add_Listener () {
-    const elements = document.querySelectorAll('.batch_page_container > img');
-    elements.forEach(function (el) {
-        el.addEventListener('click', Toggle_Zoom, true)
-        el.addEventListener('contextmenu', Toggle_Zoom, true)
-    })
-    const buttons = document.querySelectorAll('button[type="button"]');
-    buttons.forEach(function (el) {
-        el.addEventListener('click', function () {
-            i = 0
-        })
-    })
+    if (ListenerAdded) {
+        return;
+    } else {
+        const elements = document.querySelectorAll('.batch_page_container > img');
+        elements.forEach(function (el) {
+            el.addEventListener('click', Toggle_Zoom, true)
+            el.addEventListener('contextmenu', Toggle_Zoom, true)
+        });
+        const buttons = document.querySelectorAll('button[type="button"]');
+        buttons.forEach(function (el) {
+            el.addEventListener('click', function () {
+                i = 0
+                ListenerAdded = false
+            })
+        });
+        !ListenerAdded
+    }
 }
 
 function Click_Zoomer () {
