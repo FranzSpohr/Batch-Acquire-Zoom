@@ -38,6 +38,7 @@ Greasemonkey
 
 ## Release History
 
+* 4.0.2 - improved efficiency
 * 4.0.1 - removed jQuery because I'm a dumdum
 
 ## Meta
