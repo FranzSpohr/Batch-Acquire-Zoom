@@ -6,7 +6,7 @@
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/reader/*
 // @match        https://api.cdn.technolutions.net/pdf/*
-// @updateURL
+// @updateURL    https://github.com/FranzSpohr/Slate_Tools/blob/master/reader_zoom.user.js
 // @grant        none
 // ==/UserScript==
 
