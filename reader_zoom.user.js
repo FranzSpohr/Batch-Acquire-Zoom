@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Slate Reader Zoom
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2.1
 // @description  For Slate Reader. Opens a page with a highder DPI render of document. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/reader/*
@@ -44,12 +44,16 @@ if (/manage\/reader/.test (location.pathname) ) {
 // Run code for all sites here.
 function zoom_Overlay(){
     const imageLink = document.querySelector("body > div.reader_viewer.reader_scrollable > div > div.container.active.loaded > div > img");
+    var startPage = 1
+    var currentPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+/);
+    var endPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+(?=,)/);
     if (imageLink == null) {
         alert("Navigate to a tab with documents first.");
         return;
     } else if (imageLink.src.includes('z=72')||imageLink.src.includes('z=96')||imageLink.src.includes('z=144')){
         imageLink.src = imageLink.src.replace(/z=\d*/, 'z=300');
     }
+    imageLink.src = imageLink.src.replace(/pg=\d*/, `pg=${currentPage}`);
     window.open(imageLink.src, "_blank", 'height=' + winHeight + ',width=' + winWidth +',toolbar=no,resiable=no,menubar=no,location=no,status=no,scrollbars=no').moveTo(0,0);
 };
 
