@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Slate Reader Zoom
 // @namespace    http://tampermonkey.net/
-// @version      1.0
-// @description  For Slate Reader. Increases available zoom levels. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
+// @version      1.1
+// @description  For Slate Reader. Opens a page with a highder DPI render of document. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/reader/*
 // @match        https://api.cdn.technolutions.net/pdf/*
@@ -10,22 +10,49 @@
 // @grant        none
 // ==/UserScript==
 
-var input=document.createElement("input");
+// little buffer to prevent forced scrollbars
+var padding = 20;
 
-input.type="button";
-input.value="Open Zoomed-In Window";
-input.onclick = zoom_Overlay;
-input.setAttribute("style", "font-size:14px;position:absolute;top:97.5%;right:62.5%;");
-document.body.appendChild(input);
+// Values to use when opening window
+var winWidth = screen.width + padding;
+var winHeight = screen.height + padding;
 
+if (/manage\/reader/.test (location.pathname) ) {
+    //Run in Slate Reader
+    var input=document.createElement("input");
+
+    input.type="button";
+    input.value="Open Zoomed-In Image";
+    input.onclick = zoom_Overlay;
+    input.setAttribute("style", "font-size:14px;position:absolute;top:97.4%;right:62.5%;");
+    document.body.appendChild(input);
+} else if (/pdf\/render/.test (location.pathname) ) {
+    //Run in the new window
+    const newImg = document.querySelector("img");
+
+    newImg.style.width = (screen.width)*0.975;
+    newImg.style.height = 'auto';
+
+    var buttonExit=document.createElement("input");
+    buttonExit.type="button";
+    buttonExit.value="Exit";
+    buttonExit.onclick = closeWindow;
+    buttonExit.setAttribute("style", "font-size:14px;position:fixed;top:96%;right:50%;")
+    document.body.appendChild(buttonExit);
+}
+
+// Run code for all sites here.
 function zoom_Overlay(){
     const imageLink = document.querySelector("body > div.reader_viewer.reader_scrollable > div > div.container.active.loaded > div > img");
-    if (imageLink.src.includes('z=72')){
-        imageLink.src = imageLink.src.replace('z=72', 'z=216');
-    } else if (imageLink.src.includes('z=96')) {
-        imageLink.src = imageLink.src.replace('z=96', 'z=216');
-    } else if (imageLink.src.includes('z=144')) {
-        imageLink.src = imageLink.src.replace('z=144', 'z=216');
+    if (imageLink == null) {
+        alert("Navigate to a tab with documents first.");
+        return;
+    } else if (imageLink.src.includes('z=72')||imageLink.src.includes('z=96')||imageLink.src.includes('z=144')){
+        imageLink.src = imageLink.src.replace(/z=\d*/, 'z=300');
     }
-    window.open(imageLink.src, '_blank','height=' + screen.height + ',width=' + screen.width + ',toolbar=no,resiable=yes,menubar=no,location=no');
+    window.open(imageLink.src, "_blank", 'height=' + winHeight + ',width=' + winWidth +',toolbar=no,resiable=no,menubar=no,location=no,status=no,scrollbars=no').moveTo(0,0);
 };
+
+function closeWindow(){
+    window.close()
+}
