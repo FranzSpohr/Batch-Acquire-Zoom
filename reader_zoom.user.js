@@ -53,7 +53,7 @@ function zoom_Overlay(){
     } else if (imageLink.src.includes('z=72')||imageLink.src.includes('z=96')||imageLink.src.includes('z=144')){
         imageLink.src = imageLink.src.replace(/z=\d*/, 'z=300');
     }
-    imageLink.src = imageLink.src.replace(/pg=\d*/, `pg=${currentPage}-1`);
+    imageLink.src = imageLink.src.replace(/pg=\d*/, `pg=${currentPage-1}`);
     window.open(imageLink.src, "_blank", 'height=' + winHeight + ',width=' + winWidth +',toolbar=no,resiable=no,menubar=no,location=no,status=no,scrollbars=no').moveTo(0,0);
 };
 
