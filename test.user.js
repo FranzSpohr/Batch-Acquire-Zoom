@@ -7,7 +7,7 @@
 // @match        https://*/manage/reader/*
 // @match        https://api.cdn.technolutions.net/pdf/*
 // @match        about:blank
-// @require      https://github.com/FranzSpohr/Slate_Tools/raw/blob/required/spotlight.bundle.js
+// @require      https://rawcdn.githack.com/nextapps-de/spotlight/0.6.3/dist/spotlight.bundle.js
 // @updateURL
 // @grant        none
 // ==/UserScript==
