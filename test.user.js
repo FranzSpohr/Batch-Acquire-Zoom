@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         test Reader Zoom
+// @name         Reader Zoom test 2
 // @namespace    http://tampermonkey.net/
 // @version      1.0
 // @description  For Slate Reader. Increases available zoom levels. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
