@@ -6,8 +6,7 @@
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/reader/*
 // @match        https://api.cdn.technolutions.net/pdf/*
-// @match        about:blank
-// @require      https://rawcdn.githack.com/nextapps-de/spotlight/0.6.3/dist/spotlight.bundle.js
+// @match        about:blank      
 // @updateURL
 // @grant        none
 // ==/UserScript==
@@ -79,6 +78,10 @@ function zoom_Overlay(){
     //win.moveto(0,0);
     var win = popupWindow("","Zoom",window,1920,1080)
     //win.document.body.innerHTML = '<img class = "zoomed_image" src=' + imageLink.src + ' width = "100%" height="auto">'
+    var spot = win.document.createElement('script');
+    spot.src = "https://rawcdn.githack.com/nextapps-de/spotlight/0.6.3/dist/spotlight.bundle.js"
+    spot.type = 'text/javascript';
+    documents.getElementsByTagName('head')[0].appendChild(spot);
     win.document.body.innerHTML = '<a class="spotlight" href="' + imageLink.src + '"><img src="' + imageLink.src + '" width = "50%" height="auto"></a>'
 };
 
