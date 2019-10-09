@@ -7,7 +7,7 @@
 // @match        https://*/manage/reader/*
 // @match        https://api.cdn.technolutions.net/pdf/*
 // @updateURL    https://github.com/FranzSpohr/Slate_Tools/blob/master/reader_zoom.user.js
-// @require
+// @require      https://github.com/FranzSpohr/Slate_Tools/raw/master/required/spotlight.bundle.js
 // @grant        none
 // ==/UserScript==
 
