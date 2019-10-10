@@ -56,8 +56,6 @@ function overlayOn() {
         imageLink.src = imageLink.src.replace(/pg=\d*/, `pg=${currentPage-1}`);
         document.getElementById("overlay").style.display = "block";
         document.getElementById("overlay").innerHTML = '<img class = "zoomed_image" src=' + imageLink.src + 'position = "fixed" width = "100%" height="auto">;'
-        alert(imageLink.src)
-        alert(currentPage)
     }
 }
 
