@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Slate Reader Zoom Test
+// @name         Slate Reader Zoom
 // @namespace    http://tampermonkey.net/
 // @version      10.10.19
 // @description  For Slate Reader. Opens an overlay with a highder DPI render of document. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
