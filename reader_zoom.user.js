@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Slate Reader Zoom
 // @namespace    https://umich.edu/
-// @version      10.11.19
+// @version      10.13.19
 // @description  For Slate Reader. Opens a page with a highder DPI render of document. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/reader/*
@@ -31,7 +31,10 @@ cursor: pointer;
 .prevUMich, .nextUMich {
 cursor: pointer;
 position: fixed;
-top: 50%;
+top: 0%;
+display: flex;
+height: 100%;
+align-items: center;
 width: auto;
 margin-top: -22px;
 padding: 16px;
@@ -59,7 +62,7 @@ font-size: 25px;
 padding: 8px 12px;
 position: fixed;
 top: 0;
-background-color: #FEFEFE;
+background-color: rgba(0,0,0,0.5);
 }
 
 .activeUMich, .dotUMich:hover {
