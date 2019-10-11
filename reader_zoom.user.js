@@ -109,14 +109,14 @@ function overlayOn() {
         showSlides(slideIndex);
         return;
     } else {
-        imageLink.src = imageLink.src.replace(/z=\d*/, 'z=300');
+        var imageNew = imageLink.src.replace(/z=\d*/, 'z=300');
         var currentPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+/);
         var startPage = 1;
         var endPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+(?=,)/);
         document.getElementById("overlay").style.display = "block";
 
         for (var i = startPage; i <= endPage; i++) {
-            imageLink.src = imageLink.src.replace(/pg=\d*/, `pg=${i-1}`);
+            imageNew = imageNew.replace(/pg=\d*/, `pg=${i-1}`);
             var slide = document.createElement("div")
             slide.id = 'slide'+i
             slide.className = 'mySlides fade'
@@ -126,7 +126,7 @@ function overlayOn() {
             pgCounter.innerHTML = i+'/'+endPage
             document.getElementById("slide"+i).appendChild(pgCounter)
             var imageLoc = document.createElement("img")
-            imageLoc.src = imageLink.src
+            imageLoc.src = imageNew
             imageLoc.onclick = overlayOff
             imageLoc.style.width = '100%'
             document.getElementById("slide"+i).appendChild(imageLoc)
