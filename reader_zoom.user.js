@@ -5,7 +5,6 @@
 // @description  For Slate Reader. Opens a page with a highder DPI render of document. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/reader/*
-// @match        https://api.cdn.technolutions.net/pdf/*
 // @updateURL    https://github.com/FranzSpohr/Slate_Tools/blob/master/reader_zoom.user.js
 // @grant        GM_addStyle
 // ==/UserScript==
