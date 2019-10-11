@@ -10,6 +10,7 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
+
 GM_addStyle (`
 .mySlidesUMich {display: none}
 
@@ -62,11 +63,7 @@ font-size: 25px;
 padding: 8px 12px;
 position: fixed;
 top: 0;
-background-color: rgba(0,0,0,0.5);
-}
-
-.activeUMich, .dotUMich:hover {
-background-color: #717171;
+background-color: rgba(255, 255, 255, 0.5);
 }
 
 .fadeUMich {
@@ -103,31 +100,33 @@ document.body.appendChild(input);
 
 function overlayOn() {
     const imageLink = document.querySelector("body > div.reader_viewer.reader_scrollable > div > div.container.active.loaded > div > img");
+    var currentPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+/);
+    var startPage = 1;
+    var endPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+(?=,)/);
     if (imageLink == null) {
         alert("Navigate to a tab with documents first.");
         return;
     } else if (imageLoaded) {
         document.getElementById("overlayUMich").style.display = "block";
-        slideIndex = 1;
+        slideIndex = parseInt(currentPage,10);
         showSlides(slideIndex);
         return;
     } else {
         var imageNew = imageLink.src.replace(/z=\d*/, 'z=300');
-        var currentPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+/);
-        var startPage = 1;
-        var endPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+(?=,)/);
-        document.getElementById("overlayUMich").style.display = "block";
 
+        document.getElementById("overlayUMich").style.display = "block";
         for (var i = startPage; i <= endPage; i++) {
             imageNew = imageNew.replace(/pg=\d*/, `pg=${i-1}`);
             var slide = document.createElement("div")
             slide.id = 'slide'+i
             slide.className = 'mySlidesUMich fadeUMich'
             document.getElementById("overlayUMich").appendChild(slide)
+
             var pgCounter = document.createElement("div")
             pgCounter.className = "numbertextUMich"
             pgCounter.innerHTML = i+'/'+endPage
             document.getElementById("slide"+i).appendChild(pgCounter)
+
             var imageLoc = document.createElement("img")
             imageLoc.src = imageNew
             imageLoc.onclick = overlayOff
@@ -137,19 +136,19 @@ function overlayOn() {
 
         var forward = document.createElement("a");
         forward.className = "nextUMich"
-        forward.onclick = plusSlides
+        forward.onclick = plusSlides;
         forward.innerHTML = "&#10095;"
         document.getElementById("overlayUMich").appendChild(forward);
 
         var backward = document.createElement("a");
         backward.className = "prevUMich"
-        backward.onclick = minusSlides
+        backward.onclick = minusSlides;
         backward.innerHTML = "&#10094;"
         document.getElementById("overlayUMich").appendChild(backward);
 
-        slideIndex = 1;
+        slideIndex = parseInt(currentPage, 10);
         showSlides(slideIndex);
-        imageLoaded = true
+        imageLoaded = true;
     }
 }
 
