@@ -67,9 +67,9 @@ background-color: #717171;
 }
 
 .fadeUMich {
--webkit-animation-name: fade;
+-webkit-animation-name: fadeUMich;
 -webkit-animation-duration: 1.5s;
-animation-name: fade;
+animation-name: fadeUMich;
 animation-duration: 1.5s;
 }
 
