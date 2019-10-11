@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Slate Reader Zoom
 // @namespace    https://umich.edu/
-// @version      10.13.19
+// @version      10.14.19
 // @description  For Slate Reader. Opens a page with a highder DPI render of document. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/reader/*
@@ -85,6 +85,7 @@ to {opacity: 1}
 
 var slideIndex = 1
 var imageLoaded = false
+var activeTab
 
 var overlay = document.createElement("div");
 overlay.id = 'overlayUMich'
@@ -99,56 +100,73 @@ document.body.appendChild(input);
 
 function overlayOn() {
     const imageLink = document.querySelector("body > div.reader_viewer.reader_scrollable > div > div.container.active.loaded > div > img");
-    var currentPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+/);
-    var startPage = 1;
-    var endPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+(?=,)/);
+
     if (imageLink == null) {
         alert("Navigate to a tab with documents first.");
         return;
-    } else if (imageLoaded) {
-        document.getElementById("overlayUMich").style.display = "block";
-        slideIndex = parseInt(currentPage,10);
-        showSlides(slideIndex);
-        return;
-    } else {
-        var imageNew = imageLink.src.replace(/z=\d*/, 'z=300');
-
-        document.getElementById("overlayUMich").style.display = "block";
-        for (var i = startPage; i <= endPage; i++) {
-            imageNew = imageNew.replace(/pg=\d*/, `pg=${i-1}`);
-            var slide = document.createElement("div")
-            slide.id = 'slide'+i
-            slide.className = 'mySlidesUMich fadeUMich'
-            document.getElementById("overlayUMich").appendChild(slide)
-
-            var pgCounter = document.createElement("div")
-            pgCounter.className = "numbertextUMich"
-            pgCounter.innerHTML = i+'/'+endPage
-            document.getElementById("slide"+i).appendChild(pgCounter)
-
-            var imageLoc = document.createElement("img")
-            imageLoc.src = imageNew
-            imageLoc.onclick = overlayOff
-            imageLoc.style.width = '100%'
-            document.getElementById("slide"+i).appendChild(imageLoc)
-        }
-
-        var forward = document.createElement("a");
-        forward.className = "nextUMich"
-        forward.onclick = plusSlides;
-        forward.innerHTML = "&#10095;"
-        document.getElementById("overlayUMich").appendChild(forward);
-
-        var backward = document.createElement("a");
-        backward.className = "prevUMich"
-        backward.onclick = minusSlides;
-        backward.innerHTML = "&#10094;"
-        document.getElementById("overlayUMich").appendChild(backward);
-
-        slideIndex = parseInt(currentPage, 10);
-        showSlides(slideIndex);
-        imageLoaded = true;
     }
+    var targetTab = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent
+    var startPage = 1;
+    var currentPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+/);
+    var endPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+(?=,)/);
+
+    if (imageLoaded) {
+        if(activeTab !== targetTab){
+            const overlayNode = document.getElementById('overlayUMich');
+            while (overlayNode.firstChild) {
+                overlayNode.removeChild(overlayNode.firstChild);
+            }
+            addElements(imageLink,startPage,endPage,currentPage)
+        } else {
+            document.getElementById("overlayUMich").style.display = "block";
+            slideIndex = parseInt(currentPage,10);
+            showSlides(slideIndex);
+            return;
+        }
+    } else {
+        addElements(imageLink,startPage,endPage,currentPage)
+    }
+}
+
+function addElements(imageSrc,startPg,endPg,currPg) {
+    var imageNew = imageSrc.src.replace(/z=\d*/, 'z=300');
+
+    document.getElementById("overlayUMich").style.display = "block";
+    for (var i = startPg; i <= endPg; i++) {
+        imageNew = imageNew.replace(/pg=\d*/, `pg=${i-1}`);
+        var slide = document.createElement("div")
+        slide.id = 'slide'+i
+        slide.className = 'mySlidesUMich fadeUMich'
+        document.getElementById("overlayUMich").appendChild(slide)
+
+        var pgCounter = document.createElement("div")
+        pgCounter.className = "numbertextUMich"
+        pgCounter.innerHTML = i+'/'+endPg
+        document.getElementById("slide"+i).appendChild(pgCounter)
+
+        var imageLoc = document.createElement("img")
+        imageLoc.src = imageNew
+        imageLoc.onclick = overlayOff
+        imageLoc.style.width = '100%'
+        document.getElementById("slide"+i).appendChild(imageLoc)
+    }
+
+    var forward = document.createElement("a");
+    forward.className = "nextUMich"
+    forward.onclick = plusSlides;
+    forward.innerHTML = "&#10095;"
+    document.getElementById("overlayUMich").appendChild(forward);
+
+    var backward = document.createElement("a");
+    backward.className = "prevUMich"
+    backward.onclick = minusSlides;
+    backward.innerHTML = "&#10094;"
+    document.getElementById("overlayUMich").appendChild(backward);
+
+    slideIndex = parseInt(currPg, 10);
+    showSlides(slideIndex);
+    imageLoaded = true;
+    activeTab = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent
 }
 
 function overlayOff() {
