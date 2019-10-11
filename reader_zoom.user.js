@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Slate Reader Zoom
-// @namespace    http://tampermonkey.net/
+// @namespace    https://umich.edu/
 // @version      10.11.19
 // @description  For Slate Reader. Opens a page with a highder DPI render of document. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
 // @author       University of Michigan OUA Processing (Theodore Ma)
@@ -11,9 +11,9 @@
 // ==/UserScript==
 
 GM_addStyle (`
-.mySlides {display: none}
+.mySlidesUMich {display: none}
 
-#overlay {
+#overlayUMich {
 overflow: auto;
 position: fixed;
 display: none;
@@ -28,7 +28,7 @@ z-index: 2;
 cursor: pointer;
 }
 
-.prev, .next {
+.prevUMich, .nextUMich {
 cursor: pointer;
 position: fixed;
 top: 50%;
@@ -43,17 +43,17 @@ border-radius: 0 3px 3px 0;
 user-select: none;
 }
 
-.next {
+.nextUMich {
 right: 1%;
 border-radius: 3px 0 0 3px;
 }
 
-.prev:hover, .next:hover {
+.prevUMich:hover, .nextUMich:hover {
 background-color: rgba(0,0,0,0.8);
 color: white;
 }
 
-.numbertext {
+.numbertextUMich {
 color: 	#000000;
 font-size: 25px;
 padding: 8px 12px;
@@ -62,23 +62,23 @@ top: 0;
 background-color: #FEFEFE;
 }
 
-.active, .dot:hover {
+.activeUMich, .dotUMich:hover {
 background-color: #717171;
 }
 
-.fade {
+.fadeUMich {
 -webkit-animation-name: fade;
 -webkit-animation-duration: 1.5s;
 animation-name: fade;
 animation-duration: 1.5s;
 }
 
-@-webkit-keyframes fade {
+@-webkit-keyframes fadeUMich {
 from {opacity: .4}
 to {opacity: 1}
 }
 
-@keyframes fade {
+@keyframes fadeUMich {
 from {opacity: .4}
 to {opacity: 1}
 }
@@ -88,14 +88,14 @@ var slideIndex = 1
 var imageLoaded = false
 
 var overlay = document.createElement("div");
-overlay.id = 'overlay'
+overlay.id = 'overlayUMich'
 document.body.appendChild(overlay);
 
 var input=document.createElement("input");
 input.type="button";
 input.value="Display Larger Image";
 input.onclick = overlayOn;
-input.setAttribute("style", "font-size:14px;position:absolute;top:97.4%;right:62.5%;");
+input.setAttribute("style", "font-size:14px;position:absolute;top:97.4%;right:50%;");
 document.body.appendChild(input);
 
 function overlayOn() {
@@ -104,7 +104,7 @@ function overlayOn() {
         alert("Navigate to a tab with documents first.");
         return;
     } else if (imageLoaded) {
-        document.getElementById("overlay").style.display = "block";
+        document.getElementById("overlayUMich").style.display = "block";
         slideIndex = 1;
         showSlides(slideIndex);
         return;
@@ -113,16 +113,16 @@ function overlayOn() {
         var currentPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+/);
         var startPage = 1;
         var endPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+(?=,)/);
-        document.getElementById("overlay").style.display = "block";
+        document.getElementById("overlayUMich").style.display = "block";
 
         for (var i = startPage; i <= endPage; i++) {
             imageNew = imageNew.replace(/pg=\d*/, `pg=${i-1}`);
             var slide = document.createElement("div")
             slide.id = 'slide'+i
-            slide.className = 'mySlides fade'
-            document.getElementById("overlay").appendChild(slide)
+            slide.className = 'mySlidesUMich fadeUMich'
+            document.getElementById("overlayUMich").appendChild(slide)
             var pgCounter = document.createElement("div")
-            pgCounter.className = "numbertext"
+            pgCounter.className = "numbertextUMich"
             pgCounter.innerHTML = i+'/'+endPage
             document.getElementById("slide"+i).appendChild(pgCounter)
             var imageLoc = document.createElement("img")
@@ -133,16 +133,16 @@ function overlayOn() {
         }
 
         var forward = document.createElement("a");
-        forward.className = "next"
+        forward.className = "nextUMich"
         forward.onclick = plusSlides
         forward.innerHTML = "&#10095;"
-        document.getElementById("overlay").appendChild(forward);
+        document.getElementById("overlayUMich").appendChild(forward);
 
         var backward = document.createElement("a");
-        backward.className = "prev"
+        backward.className = "prevUMich"
         backward.onclick = minusSlides
         backward.innerHTML = "&#10094;"
-        document.getElementById("overlay").appendChild(backward);
+        document.getElementById("overlayUMich").appendChild(backward);
 
         slideIndex = 1;
         showSlides(slideIndex);
@@ -151,7 +151,7 @@ function overlayOn() {
 }
 
 function overlayOff() {
-    document.getElementById("overlay").style.display = "none";
+    document.getElementById("overlayUMich").style.display = "none";
 }
 
 function plusSlides() {
@@ -164,7 +164,7 @@ function minusSlides() {
 
 function showSlides(n) {
     var i;
-    var slides = document.getElementsByClassName("mySlides");
+    var slides = document.getElementsByClassName("mySlidesUMich");
     if (n > slides.length) {slideIndex = 1}
     if (n < 1) {slideIndex = slides.length}
     for (i = 0; i < slides.length; i++) {
