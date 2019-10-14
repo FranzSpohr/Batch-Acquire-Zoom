@@ -9,7 +9,6 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
-
 GM_addStyle (`
 .mySlidesUMich {display: none}
 
@@ -57,12 +56,15 @@ color: white;
 }
 
 .numbertextUMich {
+border-radius:  25px;
+border: 1px solid #000000;
 color: 	#000000;
-font-size: 25px;
-padding: 8px 12px;
+font-size: 20px;
+padding: 6px 10px;
 position: fixed;
-top: 0;
-background-color: rgba(255, 255, 255, 0.5);
+top: 5px;
+left: 5px;
+background-color: rgba(192, 192, 192, 0.5);
 }
 
 .fadeUMich {
@@ -83,20 +85,22 @@ to {opacity: 1}
 }
 `);
 
-var slideIndex = 1
-var imageLoaded = false
-var activeTab
+var slideIndex = 1;
+var imageLoaded = false;
+var activeTab;
 
 var overlay = document.createElement("div");
-overlay.id = 'overlayUMich'
+overlay.id = 'overlayUMich';
 document.body.appendChild(overlay);
+overlay.addEventListener('keydown', key_handler, true);
+overlay.tabIndex = -1;
 
 var input=document.createElement("input");
 input.type="button";
 input.value="Display Larger Image";
 input.onclick = overlayOn;
-input.setAttribute("style", "font-size:14px;position:absolute;top:97.4%;right:50%;");
-document.body.appendChild(input);
+input.setAttribute("style", "font-size:13px;position:absolute;right:50%;height:25px;");
+document.getElementsByClassName('reader_footer')[0].appendChild(input);
 
 function overlayOn() {
     const imageLink = document.querySelector("body > div.reader_viewer.reader_scrollable > div > div.container.active.loaded > div > img");
@@ -105,89 +109,105 @@ function overlayOn() {
         alert("Navigate to a tab with documents first.");
         return;
     }
-    var targetTab = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent
+
     var startPage = 1;
     var currentPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+/);
     var endPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+(?=,)/);
+    var targetTab = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent;
 
     if (imageLoaded) {
         if(activeTab !== targetTab){
-            const overlayNode = document.getElementById('overlayUMich');
-            while (overlayNode.firstChild) {
-                overlayNode.removeChild(overlayNode.firstChild);
+            while (overlay.firstChild) {
+                overlay.removeChild(overlay.firstChild);
             }
             addElements(imageLink,startPage,endPage,currentPage)
+            overlay.style.display = "block";
+            overlay.focus()
         } else {
-            document.getElementById("overlayUMich").style.display = "block";
             slideIndex = parseInt(currentPage,10);
             showSlides(slideIndex);
+            overlay.style.display = "block";
+            overlay.focus()
             return;
         }
     } else {
-        addElements(imageLink,startPage,endPage,currentPage)
+        addElements(imageLink,startPage,endPage,currentPage);
+        overlay.style.display = "block";
+        overlay.focus()
     }
 }
 
 function addElements(imageSrc,startPg,endPg,currPg) {
     var imageNew = imageSrc.src.replace(/z=\d*/, 'z=300');
 
-    document.getElementById("overlayUMich").style.display = "block";
     for (var i = startPg; i <= endPg; i++) {
         imageNew = imageNew.replace(/pg=\d*/, `pg=${i-1}`);
-        var slide = document.createElement("div")
-        slide.id = 'slide'+i
-        slide.className = 'mySlidesUMich fadeUMich'
-        document.getElementById("overlayUMich").appendChild(slide)
+        var slide = document.createElement("div");
+        slide.id = 'slide'+i;
+        slide.className = 'mySlidesUMich fadeUMich';
+        document.getElementById("overlayUMich").appendChild(slide);
 
-        var pgCounter = document.createElement("div")
-        pgCounter.className = "numbertextUMich"
-        pgCounter.innerHTML = i+'/'+endPg
-        document.getElementById("slide"+i).appendChild(pgCounter)
+        var pgCounter = document.createElement("div");
+        pgCounter.className = "numbertextUMich";
+        pgCounter.innerHTML = i+'/'+endPg;
+        document.getElementById("slide"+i).appendChild(pgCounter);
 
-        var imageLoc = document.createElement("img")
-        imageLoc.src = imageNew
-        imageLoc.onclick = overlayOff
-        imageLoc.style.width = '100%'
-        document.getElementById("slide"+i).appendChild(imageLoc)
+        var imageLoc = document.createElement("img");
+        imageLoc.id = 'imageNew' + i;
+        imageLoc.src = imageNew;
+        imageLoc.onclick = overlayOff;
+        imageLoc.style.width = '100%';
+        document.getElementById("slide"+i).appendChild(imageLoc);
     }
 
     var forward = document.createElement("a");
-    forward.className = "nextUMich"
+    forward.className = "nextUMich";
     forward.onclick = plusSlides;
-    forward.innerHTML = "&#10095;"
+    forward.innerHTML = "&#10095;";
     document.getElementById("overlayUMich").appendChild(forward);
 
     var backward = document.createElement("a");
-    backward.className = "prevUMich"
+    backward.className = "prevUMich";
     backward.onclick = minusSlides;
-    backward.innerHTML = "&#10094;"
+    backward.innerHTML = "&#10094;";
     document.getElementById("overlayUMich").appendChild(backward);
 
     slideIndex = parseInt(currPg, 10);
     showSlides(slideIndex);
     imageLoaded = true;
-    activeTab = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent
-}
+    activeTab = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent;
+};
+
+function key_handler(event) {
+      if (event.code == 'ArrowRight') {
+          plusSlides();
+      } else if (event.code == 'ArrowLeft') {
+          minusSlides();
+      } else if (event.code == 'Escape') {
+          overlayOff();
+      };
+    event.stopPropagation();
+};
 
 function overlayOff() {
     document.getElementById("overlayUMich").style.display = "none";
-}
+};
 
 function plusSlides() {
     showSlides(slideIndex += 1);
-}
+};
 
 function minusSlides() {
     showSlides(slideIndex -= 1);
-}
+};
 
 function showSlides(n) {
     var i;
     var slides = document.getElementsByClassName("mySlidesUMich");
-    if (n > slides.length) {slideIndex = 1}
-    if (n < 1) {slideIndex = slides.length}
+    if (n > slides.length) {slideIndex = 1};
+    if (n < 1) {slideIndex = slides.length};
     for (i = 0; i < slides.length; i++) {
         slides[i].style.display = "none";
-    }
+    };
     slides[slideIndex-1].style.display = "block";
-}
+};
