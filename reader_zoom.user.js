@@ -195,6 +195,7 @@ function key_handler(event) {
 function overlayOff() {
     const elements = document.getElementById('imageNew'+slideIndex);
     elements.setAttribute("style", "width:100%;");
+    overlay.scrollTo(0,0);
     document.getElementById("overlayUMich").style.display = "none";
 };
 
