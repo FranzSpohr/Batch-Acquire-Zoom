@@ -85,6 +85,7 @@ to {opacity: 1}
 }
 `);
 
+var zoomed = false
 var slideIndex = 1;
 var imageLoaded = false;
 var activeTab;
@@ -93,6 +94,8 @@ var overlay = document.createElement("div");
 overlay.id = 'overlayUMich';
 document.body.appendChild(overlay);
 overlay.addEventListener('keydown', key_handler, true);
+overlay.className = 'dragscroll'
+overlay.onclick = toggleZoom;
 overlay.tabIndex = -1;
 
 var input=document.createElement("input");
@@ -155,7 +158,7 @@ function addElements(imageSrc,startPg,endPg,currPg) {
         var imageLoc = document.createElement("img");
         imageLoc.id = 'imageNew' + i;
         imageLoc.src = imageNew;
-        imageLoc.onclick = overlayOff;
+        imageLoc.addEventListener('contextmenu', overlayOff)
         imageLoc.style.width = '100%';
         document.getElementById("slide"+i).appendChild(imageLoc);
     }
@@ -190,15 +193,36 @@ function key_handler(event) {
 };
 
 function overlayOff() {
+    const elements = document.getElementById('imageNew'+slideIndex);
+    elements.setAttribute("style", "width:100%;");
     document.getElementById("overlayUMich").style.display = "none";
 };
 
+function toggleZoom () {
+    const elements = document.getElementById('imageNew'+slideIndex);
+    if (zoomed) {
+        elements.setAttribute("style", "width:100%;");
+        zoomed=false;
+    } else {
+        elements.setAttribute("style", "width:130%;");
+        zoomed=true;
+    }
+}
+
 function plusSlides() {
+    const elements = document.getElementById('imageNew'+slideIndex);
+    elements.setAttribute("style", "width:100%;");
     showSlides(slideIndex += 1);
+    overlay.scrollTo(0,0);
+    zoomed=false;
 };
 
 function minusSlides() {
+    const elements = document.getElementById('imageNew'+slideIndex);
+    elements.setAttribute("style", "width:100%;");
     showSlides(slideIndex -= 1);
+    overlay.scrollTo(0,0);
+    zoomed=false;
 };
 
 function showSlides(n) {
@@ -211,3 +235,110 @@ function showSlides(n) {
     };
     slides[slideIndex-1].style.display = "block";
 };
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['exports'], factory);
+    } else if (typeof exports !== 'undefined') {
+        factory(exports);
+    } else {
+        factory((root.dragscroll = {}));
+    }
+}(this, function (exports) {
+    var _window = window;
+    var _document = document;
+    var mousemove = 'mousemove';
+    var mouseup = 'mouseup';
+    var mousedown = 'mousedown';
+    var mouseenter = 'mouseenter';
+    var click = 'click';
+    var EventListener = 'EventListener';
+    var addEventListener = 'add'+EventListener;
+    var removeEventListener = 'remove'+EventListener;
+    var newScrollX, newScrollY;
+    var moveThreshold = 4;
+
+    var dragged = [];
+    var reset = function(i, el) {
+        for (i = 0; i < dragged.length;) {
+            el = dragged[i++];
+            el = el.container || el;
+            el[removeEventListener](mousedown, el.md, 0);
+            el[removeEventListener](click, el.mc, 0);
+            _window[removeEventListener](mouseup, el.mu, 0);
+            _window[removeEventListener](mousemove, el.mm, 0);
+            _document[removeEventListener](mouseenter, el.me, 0);
+        }
+
+        // cloning into array since HTMLCollection is updated dynamically
+        dragged = [].slice.call(_document.getElementsByClassName('dragscroll'));
+        for (i = 0; i < dragged.length;) {
+            (function(el, lastClientX, lastClientY, startX, startY, moved, pushed, scroller, cont){
+                (cont = el.container || el)[addEventListener](
+                    mousedown,
+                    cont.md = function(e) {
+                        if (!el.hasAttribute('nochilddrag') ||
+                            _document.elementFromPoint(
+                                e.pageX, e.pageY
+                            ) == cont
+                        ) {
+                            pushed = 1;
+                            moved = 0;
+                            startX = lastClientX = e.clientX;
+                            startY = lastClientY = e.clientY;
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+                    }, 0
+                );
+                (cont = el.container || el)[addEventListener](
+                  click,
+                  cont.mc = function(e) {
+                    if (moved) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      moved = 0; pushed = 0;
+                    }
+                  }, 1
+                );
+                _window[addEventListener](
+                    mouseup, cont.mu = function() {pushed = 0;}, 0
+                );
+                _document[addEventListener](
+                  mouseenter, cont.me = function(e) {if (!e.buttonsPressed) pushed = 0;}, 0
+                );
+                _window[addEventListener](
+                    mousemove,
+                    cont.mm = function(e) {
+                        if (pushed) {
+                          if (!moved &&
+                            (Math.abs(e.clientX - startX) > moveThreshold ||
+                             Math.abs(e.clientY - startY) > moveThreshold)) {
+                               moved = true;
+                             }
+                          if (moved) {
+                            (scroller = el.scroller||el).scrollLeft -=
+                                newScrollX = (- lastClientX + (lastClientX=e.clientX));
+                            scroller.scrollTop -=
+                                newScrollY = (- lastClientY + (lastClientY=e.clientY));
+                            if (el == _document.body) {
+                                (scroller = _document.documentElement).scrollLeft -= newScrollX;
+                                scroller.scrollTop -= newScrollY;
+                            }
+                          }
+                        }
+                    }, 0
+                );
+             })(dragged[i++]);
+        }
+    }
+
+
+    if (_document.readyState == 'complete') {
+        reset();
+    } else {
+        _window[addEventListener]('load', reset, 0);
+    }
+
+    exports.reset = reset;
+}));
