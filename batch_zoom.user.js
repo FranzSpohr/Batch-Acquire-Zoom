@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Batch Acquire Zoom
 // @namespace    http://tampermonkey.net/
-// @version      4.0.3
+// @version      10.15.19
 // @description  For Slate Batch Acquire. Needs Tampermonkey for Chrome or Greasemonkey for Firefox. See readme for more info.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/database/acquire
@@ -11,7 +11,7 @@
 // @grant        none
 // ==/UserScript==
 
-var i = 0
+var zoomCount = 0
 var ListenerAdded = false
 var Zoom_Levels = [72, 108, 144, 180, 216];
 
@@ -21,28 +21,28 @@ window.addEventListener('click', Add_Listener, true)
 function Toggle_Zoom (event) {
     if (event.code == 'NumpadAdd'||event.code == 'Equal'||event.type == 'click') {
         event.preventDefault();
-        if (i == 4) {
+        if (zoomCount == 4) {
             Click_Zoomer ();
             return;
         }
         const elements = document.querySelectorAll('.batch_page_container > img');
         elements.forEach(function (el) {
-            if (el.src.includes(`z=${Zoom_Levels[i]}`)) {
-                el.src = el.src.replace(`z=${Zoom_Levels[i]}`, `z=${Zoom_Levels[i+1]}`);
+            if (el.src.includes(`z=${Zoom_Levels[zoomCount]}`)) {
+                el.src = el.src.replace(`z=${Zoom_Levels[zoomCount]}`, `z=${Zoom_Levels[zoomCount+1]}`);
             }
         });
-        i++;
+        zoomCount++;
         Click_Zoomer ();
     } else if (event.code == 'NumpadSubtract'||event.code == 'Minus'||event.type == 'contextmenu') {
         event.preventDefault();
-        if (i == 0) {return};
+        if (zoomCount == 0) {return};
         const elements = document.querySelectorAll('.batch_page_container > img');
         elements.forEach(function (el) {
-            if (el.src.includes(`z=${Zoom_Levels[i]}`)) {
-                el.src = el.src.replace(`z=${Zoom_Levels[i]}`, `z=${Zoom_Levels[i-1]}`);
+            if (el.src.includes(`z=${Zoom_Levels[zoomCount]}`)) {
+                el.src = el.src.replace(`z=${Zoom_Levels[zoomCount]}`, `z=${Zoom_Levels[zoomCount-1]}`);
             }
         });
-        i--;
+        zoomCount--;
     }
 }
 
@@ -58,7 +58,7 @@ function Add_Listener () {
         const buttons = document.querySelectorAll('button[type="button"]');
         buttons.forEach(function (el) {
             el.addEventListener('click', function () {
-                i = 0
+                zoomCount = 0
                 ListenerAdded = false
             })
         });
