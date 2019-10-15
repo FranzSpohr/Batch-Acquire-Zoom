@@ -9,8 +9,6 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
-//http://jsbin.com/ibUrIxu/1/edit?html,output
-
 GM_addStyle (`
 .mySlidesUMich {display: none}
 
@@ -27,6 +25,27 @@ bottom: 0;
 background-color: rgba(0,0,0,0.5);
 z-index: 2;
 cursor: pointer;
+}
+
+#tooltipUMich {
+border-radius:  25px;
+border: 1px solid #00274c;
+position: fixed;
+width:auto;
+height:auto;
+top:2.0%;
+right:1.5%;
+color:black;
+background-color: rgba(192, 192, 192, .95);
+align="justify";
+padding: 16px;
+}
+
+#buttonUMich {
+font-size:13px;
+position:absolute;
+right:50%;
+height:25px;
 }
 
 .prevUMich, .nextUMich {
@@ -59,14 +78,14 @@ color: white;
 
 .numbertextUMich {
 border-radius:  25px;
-border: 1px solid #000000;
+border: 1px solid #00274c;
 color: 	#000000;
 font-size: 20px;
 padding: 6px 10px;
 position: fixed;
 top: 5px;
 left: 5px;
-background-color: rgba(192, 192, 192, 0.5);
+background-color: rgba(192, 192, 192, 0.7);
 }
 
 .fadeUMich {
@@ -96,15 +115,15 @@ var overlay = document.createElement("div");
 overlay.id = 'overlayUMich';
 document.body.appendChild(overlay);
 overlay.addEventListener('keydown', key_handler, true);
+overlay.addEventListener('contextmenu', overlayOff)
 overlay.className = 'dragscroll'
-overlay.onclick = toggleZoom;
 overlay.tabIndex = -1;
 
 var input=document.createElement("input");
 input.type="button";
+input.id = 'buttonUMich'
 input.value="Display Larger Image";
 input.onclick = overlayOn;
-input.setAttribute("style", "font-size:13px;position:absolute;right:50%;height:25px;");
 document.getElementsByClassName('reader_footer')[0].appendChild(input);
 
 function overlayOn() {
@@ -126,19 +145,16 @@ function overlayOn() {
                 overlay.removeChild(overlay.firstChild);
             }
             addElements(imageLink,startPage,endPage,currentPage)
-            overlay.style.display = "block";
-            overlay.focus()
+            displayTooltip()
         } else {
             slideIndex = parseInt(currentPage,10);
             showSlides(slideIndex);
-            overlay.style.display = "block";
-            overlay.focus()
+            displayTooltip()
             return;
         }
     } else {
         addElements(imageLink,startPage,endPage,currentPage);
-        overlay.style.display = "block";
-        overlay.focus()
+        displayTooltip();
     }
 }
 
@@ -160,20 +176,20 @@ function addElements(imageSrc,startPg,endPg,currPg) {
         var imageLoc = document.createElement("img");
         imageLoc.id = 'imageNew' + i;
         imageLoc.src = imageNew;
-        imageLoc.addEventListener('contextmenu', overlayOff)
         imageLoc.style.width = '100%';
+        imageLoc.onclick = toggleZoom
         document.getElementById("slide"+i).appendChild(imageLoc);
     }
 
     var forward = document.createElement("a");
     forward.className = "nextUMich";
-    forward.onclick = plusSlides;
+    forward.onclick = function(){plusSlides(1)};
     forward.innerHTML = "&#10095;";
     document.getElementById("overlayUMich").appendChild(forward);
 
     var backward = document.createElement("a");
     backward.className = "prevUMich";
-    backward.onclick = minusSlides;
+    backward.onclick = function(){plusSlides(-1)};
     backward.innerHTML = "&#10094;";
     document.getElementById("overlayUMich").appendChild(backward);
 
@@ -184,25 +200,27 @@ function addElements(imageSrc,startPg,endPg,currPg) {
 };
 
 function key_handler(event) {
-      if (event.code == 'ArrowRight') {
-          plusSlides();
-      } else if (event.code == 'ArrowLeft') {
-          minusSlides();
-      } else if (event.code == 'Escape') {
-          overlayOff();
-      };
+    hideTooltip();
+    if (event.code == 'ArrowRight') {
+        plusSlides(1);
+    } else if (event.code == 'ArrowLeft') {
+        plusSlides(-1);
+    } else if (event.code == 'Escape') {
+        overlayOff();
+    };
     event.stopPropagation();
 };
 
 function overlayOff() {
     const elements = document.getElementById('imageNew'+slideIndex);
     elements.setAttribute("style", "width:100%;");
-    overlay.scrollTo(0,0);
     document.getElementById("overlayUMich").style.display = "none";
+    hideTooltip();
 };
 
 function toggleZoom () {
     const elements = document.getElementById('imageNew'+slideIndex);
+    hideTooltip();
     if (zoomed) {
         elements.setAttribute("style", "width:100%;");
         zoomed=false;
@@ -212,18 +230,32 @@ function toggleZoom () {
     }
 }
 
-function plusSlides() {
-    const elements = document.getElementById('imageNew'+slideIndex);
-    elements.setAttribute("style", "width:100%;");
-    showSlides(slideIndex += 1);
-    overlay.scrollTo(0,0);
-    zoomed=false;
-};
+function displayTooltip () {
+    if (document.getElementById('tooltipUMich') == null) {
+        var tooltip = document.createElement("div");
+        tooltip.id = 'tooltipUMich';
+        tooltip.innerHTML = '<p>Navigate between pages by<strong>&nbsp;left clicking on arrows&nbsp;</strong>near the edges of the screen.</p><ul><li><strong>Esc Key:&nbsp;</strong>Return to reader</li><li><strong>Right Click:&nbsp;</strong>Return to reader</li><li><strong>Left Arrow Key:</strong> Previous page</li><li><strong>Right Arrow Key:&nbsp;</strong>Next page</li><li><strong>Left Click:</strong> Toggle between zoom levels</li><li><strong>Hold Left Click &amp; Mouse Drag</strong>: Scroll document</li></ul><p>If you encounter any bugs and/or glitches or have<br>any suggestions or requests, please <strong>contact Ted Ma at <a href="mailto:tedma@umich.edu">tedma@umich.edu</a>.</strong></p>'
+        document.getElementById("overlayUMich").appendChild(tooltip);
+        tooltip.style.display = 'block';
+        setTimeout(function(){tooltip.parentNode.removeChild(tooltip)}, 10000)
+    } else {
+        tooltip.style.display = 'block';
+    }
+    overlay.style.display = "block";
+    overlay.focus()
+}
 
-function minusSlides() {
+function hideTooltip () {
+    var tooltip = document.getElementById('tooltipUMich');
+    if (tooltip != null){
+        tooltip.parentNode.removeChild(tooltip);
+    }
+}
+
+function plusSlides(n) {
     const elements = document.getElementById('imageNew'+slideIndex);
     elements.setAttribute("style", "width:100%;");
-    showSlides(slideIndex -= 1);
+    showSlides(slideIndex += n);
     overlay.scrollTo(0,0);
     zoomed=false;
 };
@@ -282,57 +314,59 @@ function showSlides(n) {
                     cont.md = function(e) {
                         if (!el.hasAttribute('nochilddrag') ||
                             _document.elementFromPoint(
-                                e.pageX, e.pageY
-                            ) == cont
-                        ) {
+                            e.pageX, e.pageY
+                        ) == cont
+                           ) {
                             pushed = 1;
                             moved = 0;
                             startX = lastClientX = e.clientX;
                             startY = lastClientY = e.clientY;
+                            //only change to dragscroll to hide tooltip on mouse movement
+                            hideTooltip();
                             e.preventDefault();
                             e.stopPropagation();
                         }
                     }, 0
                 );
                 (cont = el.container || el)[addEventListener](
-                  click,
-                  cont.mc = function(e) {
-                    if (moved) {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      moved = 0; pushed = 0;
-                    }
-                  }, 1
+                    click,
+                    cont.mc = function(e) {
+                        if (moved) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            moved = 0; pushed = 0;
+                        }
+                    }, 1
                 );
                 _window[addEventListener](
                     mouseup, cont.mu = function() {pushed = 0;}, 0
                 );
                 _document[addEventListener](
-                  mouseenter, cont.me = function(e) {if (!e.buttonsPressed) pushed = 0;}, 0
+                    mouseenter, cont.me = function(e) {if (!e.buttonsPressed) pushed = 0;}, 0
                 );
                 _window[addEventListener](
                     mousemove,
                     cont.mm = function(e) {
                         if (pushed) {
-                          if (!moved &&
-                            (Math.abs(e.clientX - startX) > moveThreshold ||
-                             Math.abs(e.clientY - startY) > moveThreshold)) {
-                               moved = true;
-                             }
-                          if (moved) {
-                            (scroller = el.scroller||el).scrollLeft -=
-                                newScrollX = (- lastClientX + (lastClientX=e.clientX));
-                            scroller.scrollTop -=
-                                newScrollY = (- lastClientY + (lastClientY=e.clientY));
-                            if (el == _document.body) {
-                                (scroller = _document.documentElement).scrollLeft -= newScrollX;
-                                scroller.scrollTop -= newScrollY;
+                            if (!moved &&
+                                (Math.abs(e.clientX - startX) > moveThreshold ||
+                                 Math.abs(e.clientY - startY) > moveThreshold)) {
+                                moved = true;
                             }
-                          }
+                            if (moved) {
+                                (scroller = el.scroller||el).scrollLeft -=
+                                    newScrollX = (- lastClientX + (lastClientX=e.clientX));
+                                scroller.scrollTop -=
+                                    newScrollY = (- lastClientY + (lastClientY=e.clientY));
+                                if (el == _document.body) {
+                                    (scroller = _document.documentElement).scrollLeft -= newScrollX;
+                                    scroller.scrollTop -= newScrollY;
+                                }
+                            }
                         }
                     }, 0
                 );
-             })(dragged[i++]);
+            })(dragged[i++]);
         }
     }
 
