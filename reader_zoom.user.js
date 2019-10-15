@@ -9,6 +9,8 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
+//http://jsbin.com/ibUrIxu/1/edit?html,output
+
 GM_addStyle (`
 .mySlidesUMich {display: none}
 
