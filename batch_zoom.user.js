@@ -13,8 +13,10 @@
 
 // stores current zoom level
 var zoomCount = 0;
+
 // stores whether event listeners were added
 var ListenerAdded = false
+
 // "z" value that Slate requires to determine size of the document render
 var Zoom_Levels = [72, 108, 144, 180, 216];
 
@@ -31,6 +33,7 @@ function Toggle_Zoom(event) {
     }
     // selects image elements loaded by batch acquire
     const elements = document.querySelectorAll('.batch_page_container > img');
+    
     // replaces the existing "z" value in the URL of documents
     elements.forEach(function(el) {
       if (el.src.includes(`z=${Zoom_Levels[zoomCount]}`)) {
