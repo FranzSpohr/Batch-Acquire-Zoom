@@ -9,7 +9,7 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
-//hey dumb-dumb, you gotta fix how some documents won't load if the DPI is too high, use 200 DPI
+//hey dumb-dumb, you gotta fix how some documents won't load if the DPI is too high, use 200 DPI, use 72138199 for reference
 
 //creates necessary CSS for userscript to function 
 GM_addStyle (`
