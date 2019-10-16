@@ -9,6 +9,8 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
+//hey dumb-dumb, you gotta fix how some documents won't load if the DPI is too high
+
 //creates necessary CSS for userscript to function 
 GM_addStyle (`
   #overlayUMich {
