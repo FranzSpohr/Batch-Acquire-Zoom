@@ -47,6 +47,23 @@ GM_addStyle (`
     height: 25px;
   }
 
+  #loaderUMich {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spinUMich 2s linear infinite;
+    animation: spinUMich 2s linear infinite;
+  }
+
   .mySlidesUMich {
 	display: none
   }
@@ -98,6 +115,21 @@ GM_addStyle (`
     animation-duration: 0.5s;
   }
 
+  .dotUMich {
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.6s ease;
+  }
+
+  .activeUMich, .dotUMich:hover {
+    background-color: #717171;
+  }
+
   @-webkit-keyframes fadeUMich {
     from {opacity: .4}
     to {opacity: 1}
@@ -106,6 +138,16 @@ GM_addStyle (`
   @keyframes fadeUMich {
     from {opacity: .4}
     to {opacity: 1}
+  }
+
+  @-webkit-keyframes spinUMich {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+
+  @keyframes spinUMich {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 `);
 
@@ -127,6 +169,7 @@ overlay.id = 'overlayUMich';
 document.body.appendChild(overlay);
 overlay.addEventListener('keydown', key_handler, true);
 overlay.addEventListener('contextmenu', overlayOff);
+overlay.addEventListener('wheel', hideTooltip);
 
 // enables scrolling by mouse drag
 overlay.className = 'dragscroll';
@@ -141,6 +184,12 @@ input.id = 'buttonUMich';
 input.value = 'Display Larger Images';
 input.onclick = overlayOn;
 document.getElementsByClassName('reader_footer')[0].appendChild(input);
+
+/* one day, this will work
+var loadingIcon = document.createElement('div');
+loadingIcon.id = 'loaderUMich';
+loadingIcon.style.display = 'block';
+document.getElementById('overlayUMich').appendChild(loadingIcon);*/
 
 // calls overlay and displays higher DPI documents
 function overlayOn() {
@@ -182,6 +231,10 @@ function overlayOn() {
 
 // adds HTML elements needed for the userscript to function
 function addElements(imageSrc, startPg, endPg, currPg) {
+  var dotContainer = document.createElement('div');
+  dotContainer.setAttribute('style', 'text-align: center; position: fixed; left: 50%; bottom: 1.5%; -webkit-transform: translate(-50%, -50%);transform: translate(-50%, -50%);');
+  document.getElementById('overlayUMich').appendChild(dotContainer);
+
   for (var i = startPg; i <= endPg; i++) {
     // Slides are div elements that contain the page number and the image
     var slides = document.createElement('div');
@@ -194,6 +247,14 @@ function addElements(imageSrc, startPg, endPg, currPg) {
     pgCounter.className = 'numbertextUMich';
     pgCounter.innerHTML = i + '/' + endPg;
     document.getElementById('slide_' + i).appendChild(pgCounter);
+
+    //here dumb dumb
+    var navDots = document.createElement('span');
+    var dotNumber = parseInt(i, 10);
+    navDots.className = 'dotUMich';
+    navDots.onclick = function() {currentSlide(0+i); alert(i)};
+    console.log(navDots.onclick);
+    dotContainer.appendChild(navDots);
 
     // higher DPI images of the documents
     var imageElement = document.createElement('img');
@@ -262,7 +323,7 @@ function toggleZoom() {
   hideTooltip();
   if (zoomed) {
     elements.setAttribute('style', 'width:100%');
-    zoomed=false;
+    zoomed = false;
   } else {
     elements.setAttribute('style', 'width:130%');
     zoomed = true;
@@ -310,15 +371,24 @@ function plusSlides(n) {
   zoomed = false;
 }
 
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
 function showSlides(n) {
   var i;
   var slides = document.getElementsByClassName('mySlidesUMich');
+  var dots = document.getElementsByClassName("dotUMich");
   if (n > slides.length) {slideIndex = 1};
   if (n < 1) {slideIndex = slides.length};
   for (i = 0; i < slides.length; i++) {
     slides[i].style.display = 'none';
   }
+  for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active", "");
+  }
   slides[slideIndex-1].style.display = 'block';
+  dots[slideIndex-1].className += " active";
 }
 
 // literally just copy pasted code from asvd's dragscroll library. Div overlayUMmich is assigned ID of dragscroll
