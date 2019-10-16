@@ -1,30 +1,47 @@
-# Batch Acquire Zoom for Slate
-> Zoom in and out in Slate with mouse and keyboard 
+# Batch Acquire Zoom and Reader Zoom for Slate
+> Zoom in and out in Slate Reader and Slate Batch-Acquire with mouse and keyboard 
 
-This Tampermonkey/Greasemonkey script will allow you to zoom in and out of documents in Slate's batch acquire page using mouse clicks or keyboard presses. Currently, the script has five different levels of zoom.
+Currently, the vanilla document zoom functionalities offered by Slate in Reader and Batch Acquire is rather limited, especially when dealing with dense documents with small texts. These 2 Tampermonkey/Greasemonkey userscripts will give users more flexibility in how they view and interact with documents while viewing and handling them in Slate Reader or Slate Batch Acquire.
 
-**To zoom-in:**
+## **Slate Reader Zoom**
+> Controls
 
-* Right-click
+**Mouse**
+* Navigate between pages by ***left-clicking*** on arrows near the edges of the screen
+* **Hold-Down Left Click & Drag:** scroll document
+* **Left Click:** Toggle between the zoom levels
+* **Right Click:** Return to reader
 
+**Keyboard**
+* **Left Arrow:** Previous page
+* **Right Arrow:** Next page 
+* **Esc:** Return to reader
+
+## **Batch Acquire Zoom**
+> Controls
+
+##### To zoom-in:
+
+* Left-click
 * **=** in number row
-
 * **+** in numpad
 
 
-**To zoom-out:**
+##### To zoom-out:
 
-* Left-click
-
+* Right-click
 * **-** in number row
-
 * **-** in numpad
 
 ![](header.png)
 
-## Requirements
+# Installation
 
-Chrome (recommended):
+## Notes
+For use at any institution other than University of Michigan-Ann Arbor, the "@match" tag of the userscripts will have to be adjusted.  
+
+## Requirements
+Chrome (recommended by Technolutions):
 
 ```sh
 Tampermonkey
@@ -36,13 +53,17 @@ Firefox:
 Greasemonkey
 ```
 
-## Release History
 
-* 4.0.2 - improved efficiency
-* 4.0.1 - removed jQuery because I'm a dumdum
+# Release History
 
-## Meta
+* 10.15.2019 - more stuff
+* 10.1.2019 - improved efficiency
+* 9.29.2019 - removed jQuery because I'm a dumdum
 
-based on code by Jamie Davis @ U-M
+# Meta
+
+Batch Acquire Zoom is based on a bookmarklet code by Jamie Davis @ U-M.
+
+Reader Zoom uses [asvd's dragscroll](https://github.com/asvd/dragscroll) for mouse drag scroll functionality. 
 
 Distributed under the GNU license. See ``LICENSE`` for more information.
