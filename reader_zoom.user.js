@@ -9,8 +9,6 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
-//hey dumb-dumb, you gotta fix how some documents won't load if the DPI is too high, use 200 DPI, use 72138199 for reference
-
 //creates necessary CSS for the userscript to function
 GM_addStyle (`
   #overlayUMich {
@@ -113,10 +111,13 @@ GM_addStyle (`
 
 // stores zoom state of a document
 var zoomed = false;
+
 // stores which page to display
 var slideIndex = 1;
+
 // stores whether higher DPI images were loaded
 var imageLoaded = false;
+
 // stores Slate tab that the images were loaded from
 var activeTab;
 
@@ -126,8 +127,10 @@ overlay.id = 'overlayUMich';
 document.body.appendChild(overlay);
 overlay.addEventListener('keydown', key_handler, true);
 overlay.addEventListener('contextmenu', overlayOff);
+
 // enables scrolling by mouse drag
 overlay.className = 'dragscroll';
+
 // enables keyboard controls by setting focus on the overlay
 overlay.tabIndex = -1;
 
@@ -135,7 +138,7 @@ overlay.tabIndex = -1;
 var input = document.createElement('input');
 input.type = 'button';
 input.id = 'buttonUMich';
-input.value = 'Display Larger Image';
+input.value = 'Display Larger Images';
 input.onclick = overlayOn;
 document.getElementsByClassName('reader_footer')[0].appendChild(input);
 
@@ -143,24 +146,23 @@ document.getElementsByClassName('reader_footer')[0].appendChild(input);
 function overlayOn() {
   // needs to be loaded to determine whether the current Slate tab has any zoomable images or not, displays alert if no images available
   const imageLink = document.querySelector('body > div.reader_viewer.reader_scrollable > div > div.container.active.loaded > div > img');
-
   if (imageLink == null) {
     alert('Navigate to a tab with documents first.');
     return;
   }
-
   // uses regular expressions to extract data needed to determine the number of needed new HTML elements
   var startPage = 1;
   var currentPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+/);
   var endPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+(?=,)/);
+
   // determines which Slate tab is currently being displayed
   var targetTab = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent;
 
   if (imageLoaded) {
-	  // determines whether the Slate tab in use has changed. If changed, deletes existing HTML elements and creates new ones 
+	  // determines whether the Slate tab in use has changed. If changed, deletes existing HTML elements and creates new ones
     if(activeTab !== targetTab){
       while (overlay.firstChild) {
-	      // necessary to prevent unused HTML elements from cluttering the page
+	    // necessary to prevent unused HTML elements from cluttering the page
         overlay.removeChild(overlay.firstChild);
       }
       addElements(imageLink, startPage, endPage, currentPage);
@@ -180,29 +182,36 @@ function overlayOn() {
 
 // adds HTML elements needed for the userscript to function
 function addElements(imageSrc, startPg, endPg, currPg) {
-  // replaces the part of HTML used to request the DPI of document with a higher one
-  var imageNew = imageSrc.src.replace(/z=\d*/, 'z=300');
   for (var i = startPg; i <= endPg; i++) {
-    // slides are div elements that contain the page number and the image
-    imageNew = imageNew.replace(/pg=\d*/, `pg=${i-1}`);
-    var slide = document.createElement('div');
-    slide.id = 'slide' + i;
-    slide.className = 'mySlidesUMich fadeUMich';
-    document.getElementById('overlayUMich').appendChild(slide);
-    
+    // Slides are div elements that contain the page number and the image
+    var slides = document.createElement('div');
+    slides.id = 'slide_' + i;
+    slides.className = 'mySlidesUMich fadeUMich';
+    document.getElementById('overlayUMich').appendChild(slides);
+
     // page counter on the upper left corner
     var pgCounter = document.createElement('div');
     pgCounter.className = 'numbertextUMich';
     pgCounter.innerHTML = i + '/' + endPg;
-    document.getElementById('slide' + i).appendChild(pgCounter);
+    document.getElementById('slide_' + i).appendChild(pgCounter);
 
     // higher DPI images of the documents
-    var imageLoc = document.createElement('img');
-    imageLoc.id = 'imageNew' + i;
-    imageLoc.src = imageNew;
-    imageLoc.style.width = '100%';
-    imageLoc.onclick = toggleZoom;
-    document.getElementById('slide' + i).appendChild(imageLoc);
+    var imageElement = document.createElement('img');
+
+    // replaces the part of HTML used to request the DPI of document with a higher one
+    var imageNewSrc = imageSrc.src.replace(/z=\d*/, 'z=300');
+
+    // lowers requested DPI if image fails to be loaded
+    var errorDPI = 200
+
+    // modifies the page number component of the URL to attach correct pages to the slides
+    imageNewSrc = imageNewSrc.replace(/pg=\d*/, `pg=${i-1}`);
+    imageElement.id = 'image_' + i;
+    imageElement.src = imageNewSrc;
+    imageElement.style.width = '100%';
+    imageElement.onclick = toggleZoom;
+    imageElement.onerror = function() {errorDPI -= 10; this.src = this.src.replace(/z=\d*/, `z=${errorDPI}`)};
+    document.getElementById('slide_' + i).appendChild(imageElement);
   }
 
   // creates anchor elements on the edges of the screen for switching between pages
@@ -240,7 +249,7 @@ function key_handler(event) {
 }
 
 function overlayOff() {
-  const elements = document.getElementById('imageNew' + slideIndex);
+  const elements = document.getElementById('image_' + slideIndex);
   // resets the zoom state of displayed document
   elements.setAttribute('style', 'width:100%');
   document.getElementById('overlayUMich').style.display = 'none';
@@ -249,7 +258,7 @@ function overlayOff() {
 
 function toggleZoom() {
   // kind of a janky way to change zoom levels of a document, could use improvement?
-  const elements = document.getElementById('imageNew' + slideIndex);
+  const elements = document.getElementById('image_' + slideIndex);
   hideTooltip();
   if (zoomed) {
     elements.setAttribute('style', 'width:100%');
@@ -262,25 +271,22 @@ function toggleZoom() {
 
 // displays tooltip. It should disappear after 10 seconds or upon any input from the user
 function displayTooltip() {
-  if (document.getElementById('tooltipUMich') == null) {
-    var tooltip = document.createElement('div');
-    tooltip.id = 'tooltipUMich';
-    tooltip.innerHTML = '<p>Navigate between pages by<strong>&nbsp;left clicking on arrows&nbsp;</strong>near the edges of the screen.</p>' +
-                        '<ul><li><strong>Esc Key:&nbsp;</strong>Return to reader</li>' +
-                        '<li><strong>Right Click:&nbsp;</strong>Return to reader</li>' +
-                        '<li><strong>Left Arrow Key:</strong> Previous page</li>' +
-                        '<li><strong>Right Arrow Key:&nbsp;</strong>Next page</li>' +
-                        '<li><strong>Left Click:</strong> Toggle between zoom levels</li>' +
-                        '<li><strong>Hold Left Click &amp; Mouse Drag</strong>: Scroll document</li></ul>' +
-                        '<p>If you encounter any bugs and/or glitches or have any suggestions or requests, <br> please' +
-                        '<strong>contact Ted Ma at <a href="mailto:tedma@umich.edu">tedma@umich.edu</a>.</strong></p>';
-    document.getElementById('overlayUMich').appendChild(tooltip);
-    tooltip.style.display = 'block';
-    // automatically hides tooltip after 10 seconds
-    setTimeout(function(){tooltip.parentNode.removeChild(tooltip)}, 10000)
-  } else {
-    tooltip.style.display = 'block';
-  }
+  var tooltip = document.createElement('div');
+  tooltip.id = 'tooltipUMich';
+  tooltip.innerHTML = '<p>Navigate between pages by<strong>&nbsp;left clicking on arrows&nbsp;</strong>near the edges of the screen.</p>' +
+                      '<ul><li><strong>Esc Key:&nbsp;</strong>Return to reader</li>' +
+                      '<li><strong>Right Click:&nbsp;</strong>Return to reader</li>' +
+                      '<li><strong>Left Arrow Key:</strong> Previous page</li>' +
+                      '<li><strong>Right Arrow Key:&nbsp;</strong>Next page</li>' +
+                      '<li><strong>Left Click:</strong> Toggle between zoom levels</li>' +
+                      '<li><strong>Hold Left Click &amp; Mouse Drag</strong>: Scroll document</li></ul>' +
+                      '<p>If you encounter any bugs and/or glitches or have any suggestions or requests, <br> please' +
+                      '<strong>contact Ted Ma at <a href="mailto:tedma@umich.edu">tedma@umich.edu</a>.</strong></p>';
+  document.getElementById('overlayUMich').appendChild(tooltip);
+  tooltip.style.display = 'block';
+
+  // automatically hides tooltip after 10 seconds
+  setTimeout(function() {if (document.getElementById('tooltipUMich') == null) {return;} else {tooltip.parentNode.removeChild(tooltip)}}, 10000)
   overlay.style.display = "block";
   overlay.focus();
 }
@@ -293,12 +299,13 @@ function hideTooltip() {
   }
 }
 
-// handles which page to show
+// handles switching between pages
 function plusSlides(n) {
-  const elements = document.getElementById('imageNew' + slideIndex);
+  const elements = document.getElementById('image_' + slideIndex);
   elements.setAttribute('style', 'width: 100%');
   showSlides(slideIndex += n);
-  // return to top of the page 
+
+  // return to top of the page
   overlay.scrollTo(0,0);
   zoomed = false;
 }
@@ -365,7 +372,8 @@ function showSlides(n) {
               moved = 0;
               startX = lastClientX = e.clientX;
               startY = lastClientY = e.clientY;
-              //only change to dragscroll to hide tooltip on mouse movement
+
+              //only change to dragscroll, hides tooltip on mouse movement
               hideTooltip();
               e.preventDefault();
               e.stopPropagation();
