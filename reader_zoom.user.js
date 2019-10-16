@@ -11,7 +11,7 @@
 
 //hey dumb-dumb, you gotta fix how some documents won't load if the DPI is too high, use 200 DPI, use 72138199 for reference
 
-//creates necessary CSS for userscript to function
+//creates necessary CSS for the userscript to function
 GM_addStyle (`
   #overlayUMich {
     overflow: auto;
@@ -128,10 +128,10 @@ overlay.addEventListener('keydown', key_handler, true);
 overlay.addEventListener('contextmenu', overlayOff);
 // enables scrolling by mouse drag
 overlay.className = 'dragscroll';
-// necessary to enable keyboard controls
+// enables keyboard controls by setting focus on the overlay
 overlay.tabIndex = -1;
 
-// injects button into Slate Reader to enable the new viewer
+// injects button into the footer of Slate Reader to display the overlay
 var input = document.createElement('input');
 input.type = 'button';
 input.id = 'buttonUMich';
@@ -139,7 +139,7 @@ input.value = 'Display Larger Image';
 input.onclick = overlayOn;
 document.getElementsByClassName('reader_footer')[0].appendChild(input);
 
-// displays higher DPI documents
+// calls overlay and displays higher DPI documents
 function overlayOn() {
   // needs to be loaded to determine whether the current Slate tab has any zoomable images or not, displays alert if no images available
   const imageLink = document.querySelector('body > div.reader_viewer.reader_scrollable > div > div.container.active.loaded > div > img');
@@ -149,23 +149,24 @@ function overlayOn() {
     return;
   }
 
-  // uses regular expressions to extract data needed to create new HTML elements
+  // uses regular expressions to extract data needed to determine the number of needed new HTML elements
   var startPage = 1;
   var currentPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+/);
   var endPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+(?=,)/);
-  // determines which Slate tab is currently in focus
+  // determines which Slate tab is currently being displayed
   var targetTab = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent;
 
   if (imageLoaded) {
+	  // determines whether the Slate tab in use has changed. If changed, deletes existing HTML elements and creates new ones 
     if(activeTab !== targetTab){
       while (overlay.firstChild) {
-	// necessary to prevent unused HTML elements from staying
+	      // necessary to prevent unused HTML elements from cluttering the page
         overlay.removeChild(overlay.firstChild);
       }
       addElements(imageLink, startPage, endPage, currentPage);
       displayTooltip();
     } else {
-      // for whatever reason, parseInt is required to convert variable to a integer
+      // for whatever reason, parseInt is required to convert variable to an integer
       slideIndex = parseInt(currentPage, 10);
       showSlides(slideIndex);
       displayTooltip();
@@ -179,19 +180,23 @@ function overlayOn() {
 
 // adds HTML elements needed for the userscript to function
 function addElements(imageSrc, startPg, endPg, currPg) {
+  // replaces the part of HTML used to request the DPI of document with a higher one
   var imageNew = imageSrc.src.replace(/z=\d*/, 'z=300');
   for (var i = startPg; i <= endPg; i++) {
+    // slides are div elements that contain the page number and the image
     imageNew = imageNew.replace(/pg=\d*/, `pg=${i-1}`);
     var slide = document.createElement('div');
     slide.id = 'slide' + i;
     slide.className = 'mySlidesUMich fadeUMich';
     document.getElementById('overlayUMich').appendChild(slide);
-
+    
+    // page counter on the upper left corner
     var pgCounter = document.createElement('div');
     pgCounter.className = 'numbertextUMich';
     pgCounter.innerHTML = i + '/' + endPg;
     document.getElementById('slide' + i).appendChild(pgCounter);
 
+    // higher DPI images of the documents
     var imageLoc = document.createElement('img');
     imageLoc.id = 'imageNew' + i;
     imageLoc.src = imageNew;
@@ -200,21 +205,21 @@ function addElements(imageSrc, startPg, endPg, currPg) {
     document.getElementById('slide' + i).appendChild(imageLoc);
   }
 
-  // creates the arrows on the edges of the screen for switching between pages
+  // creates anchor elements on the edges of the screen for switching between pages
   var forward = document.createElement('a');
   forward.className = 'nextUMich';
   forward.onclick = function() {plusSlides(1)};
   forward.innerHTML = '&#10095';
   document.getElementById('overlayUMich').appendChild(forward);
 
-  // creates the arrows on the edges of the screen for switching between pages
+  // creates anchor elements on the edges of the screen for switching between pages
   var backward = document.createElement('a');
   backward.className = 'prevUMich';
   backward.onclick = function() {plusSlides(-1)};
   backward.innerHTML = '&#10094';
   document.getElementById('overlayUMich').appendChild(backward);
 
-  // opens the viewer and displays the page currently active in Slate Reader
+  // opens the viewer and displays the page currently being displayed in Slate Reader
   slideIndex = parseInt(currPg, 10);
   showSlides(slideIndex);
   imageLoaded = true;
@@ -243,6 +248,7 @@ function overlayOff() {
 }
 
 function toggleZoom() {
+  // kind of a janky way to change zoom levels of a document, could use improvement?
   const elements = document.getElementById('imageNew' + slideIndex);
   hideTooltip();
   if (zoomed) {
@@ -254,7 +260,7 @@ function toggleZoom() {
   }
 }
 
-// displays tooltip
+// displays tooltip. It should disappear after 10 seconds or upon any input from the user
 function displayTooltip() {
   if (document.getElementById('tooltipUMich') == null) {
     var tooltip = document.createElement('div');
@@ -279,6 +285,7 @@ function displayTooltip() {
   overlay.focus();
 }
 
+// HTML element for the tooltip must be destroyed after each time to prevent clutter
 function hideTooltip() {
   var tooltip = document.getElementById('tooltipUMich');
   if (tooltip != null) {
@@ -291,6 +298,7 @@ function plusSlides(n) {
   const elements = document.getElementById('imageNew' + slideIndex);
   elements.setAttribute('style', 'width: 100%');
   showSlides(slideIndex += n);
+  // return to top of the page 
   overlay.scrollTo(0,0);
   zoomed = false;
 }
@@ -306,7 +314,7 @@ function showSlides(n) {
   slides[slideIndex-1].style.display = 'block';
 }
 
-// literally just copy pasted code from asvd's dragscroll library. overlayUMmich is assigned ID of dragscroll
+// literally just copy pasted code from asvd's dragscroll library. Div overlayUMmich is assigned ID of dragscroll
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     define(['exports'], factory);
