@@ -11,7 +11,7 @@
 
 //hey dumb-dumb, you gotta fix how some documents won't load if the DPI is too high, use 200 DPI, use 72138199 for reference
 
-//creates necessary CSS for userscript to function 
+//creates necessary CSS for userscript to function
 GM_addStyle (`
   #overlayUMich {
     overflow: auto;
@@ -128,7 +128,7 @@ overlay.addEventListener('keydown', key_handler, true);
 overlay.addEventListener('contextmenu', overlayOff);
 // enables scrolling by mouse drag
 overlay.className = 'dragscroll';
-// necessary to enable keyboard controls 
+// necessary to enable keyboard controls
 overlay.tabIndex = -1;
 
 // injects button into Slate Reader to enable the new viewer
@@ -143,12 +143,12 @@ document.getElementsByClassName('reader_footer')[0].appendChild(input);
 function overlayOn() {
   // needs to be loaded to determine whether the current Slate tab has any zoomable images or not, displays alert if no images available
   const imageLink = document.querySelector('body > div.reader_viewer.reader_scrollable > div > div.container.active.loaded > div > img');
-  
+
   if (imageLink == null) {
     alert('Navigate to a tab with documents first.');
     return;
   }
-  
+
   // uses regular expressions to extract data needed to create new HTML elements
   var startPage = 1;
   var currentPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+/);
@@ -236,7 +236,7 @@ function key_handler(event) {
 
 function overlayOff() {
   const elements = document.getElementById('imageNew' + slideIndex);
-  // resets the zoom state of displayed document 
+  // resets the zoom state of displayed document
   elements.setAttribute('style', 'width:100%');
   document.getElementById('overlayUMich').style.display = 'none';
   hideTooltip();
@@ -254,7 +254,7 @@ function toggleZoom() {
   }
 }
 
-// displays tooltip 
+// displays tooltip
 function displayTooltip() {
   if (document.getElementById('tooltipUMich') == null) {
     var tooltip = document.createElement('div');
@@ -266,7 +266,7 @@ function displayTooltip() {
                         '<li><strong>Right Arrow Key:&nbsp;</strong>Next page</li>' +
                         '<li><strong>Left Click:</strong> Toggle between zoom levels</li>' +
                         '<li><strong>Hold Left Click &amp; Mouse Drag</strong>: Scroll document</li></ul>' +
-                        '<p>If you encounter any bugs and/or glitches or have any suggestions or requests, <br> please' + 
+                        '<p>If you encounter any bugs and/or glitches or have any suggestions or requests, <br> please' +
                         '<strong>contact Ted Ma at <a href="mailto:tedma@umich.edu">tedma@umich.edu</a>.</strong></p>';
     document.getElementById('overlayUMich').appendChild(tooltip);
     tooltip.style.display = 'block';
