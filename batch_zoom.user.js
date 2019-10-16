@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Batch Acquire Zoom
-// @namespace    http://tampermonkey.net/
+// @namespace    https://umich.edu/
 // @version      10.15.19
 // @description  For Slate Batch Acquire. Needs Tampermonkey for Chrome or Greasemonkey for Firefox. See readme for more info.
 // @author       University of Michigan OUA Processing (Theodore Ma)
@@ -11,21 +11,27 @@
 // @grant        none
 // ==/UserScript==
 
-var zoomCount = 0
-var ListenerAdded = false
+// stores current zoom level 
+var zoomCount = 0;
+// stores whether event listeners were added
+var ListenerAdded = false'
+// "z" value that Slate requires to determine size of the document render
 var Zoom_Levels = [72, 108, 144, 180, 216];
 
-window.addEventListener('keydown', Toggle_Zoom, true)
-window.addEventListener('click', Add_Listener, true)
+window.addEventListener('keydown', Toggle_Zoom, true);
+window.addEventListener('click', Add_Listener, true);
 
-function Toggle_Zoom (event) {
-    if (event.code == 'NumpadAdd'||event.code == 'Equal'||event.type == 'click') {
+// toggles between zoom levels
+function Toggle_Zoom(event) {
+    if (event.code == 'NumpadAdd' || event.code == 'Equal' || event.type == 'click') {
         event.preventDefault();
         if (zoomCount == 4) {
             Click_Zoomer ();
             return;
         }
+        // selects image elements loaded by batch acquire
         const elements = document.querySelectorAll('.batch_page_container > img');
+        // replaces the existing "z" value in the URL of documents
         elements.forEach(function (el) {
             if (el.src.includes(`z=${Zoom_Levels[zoomCount]}`)) {
                 el.src = el.src.replace(`z=${Zoom_Levels[zoomCount]}`, `z=${Zoom_Levels[zoomCount+1]}`);
@@ -46,6 +52,7 @@ function Toggle_Zoom (event) {
     }
 }
 
+// adds event listeners needed for userscript to function 
 function Add_Listener () {
     if (ListenerAdded) {
         return;
@@ -66,6 +73,7 @@ function Add_Listener () {
     }
 }
 
+// kinda janky way to automatically close the useless magnifying glass that Slate has 
 function Click_Zoomer () {
     var targetNode = document.getElementsByClassName('batch_zoomer boxshadow')[0];
     if (targetNode) {
