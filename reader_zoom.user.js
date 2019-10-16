@@ -82,7 +82,7 @@ GM_addStyle (`
   .numbertextUMich {
     border-radius:  25px;
     border: 1px solid #00274c;
-    color: 	#000000;
+    color: #000000;
     font-size: 20px;
     padding: 6px 10px;
     position: fixed;
@@ -239,7 +239,15 @@ function displayTooltip () {
   if (document.getElementById('tooltipUMich') == null) {
     var tooltip = document.createElement("div");
     tooltip.id = 'tooltipUMich';
-    tooltip.innerHTML = '<p>Navigate between pages by<strong>&nbsp;left clicking on arrows&nbsp;</strong>near the edges of the screen.</p><ul><li><strong>Esc Key:&nbsp;</strong>Return to reader</li><li><strong>Right Click:&nbsp;</strong>Return to reader</li><li><strong>Left Arrow Key:</strong> Previous page</li><li><strong>Right Arrow Key:&nbsp;</strong>Next page</li><li><strong>Left Click:</strong> Toggle between zoom levels</li><li><strong>Hold Left Click &amp; Mouse Drag</strong>: Scroll document</li></ul><p>If you encounter any bugs and/or glitches or have<br>any suggestions or requests, please <strong>contact Ted Ma at <a href="mailto:tedma@umich.edu">tedma@umich.edu</a>.</strong></p>'
+    tooltip.innerHTML = '<p>Navigate between pages by<strong>&nbsp;left clicking on arrows&nbsp;</strong>near the edges of the screen.</p>' +
+                        '<ul><li><strong>Esc Key:&nbsp;</strong>Return to reader</li>' +
+                        '<li><strong>Right Click:&nbsp;</strong>Return to reader</li>' +
+                        '<li><strong>Left Arrow Key:</strong> Previous page</li>' +
+                        '<li><strong>Right Arrow Key:&nbsp;</strong>Next page</li>' +
+                        '<li><strong>Left Click:</strong> Toggle between zoom levels</li>' +
+                        '<li><strong>Hold Left Click &amp; Mouse Drag</strong>: Scroll document</li></ul>' +
+                        '<p>If you encounter any bugs and/or glitches or have<br>any suggestions or requests, please' + 
+                        '<strong>contact Ted Ma at <a href="mailto:tedma@umich.edu">tedma@umich.edu</a>.</strong></p>' +
     document.getElementById("overlayUMich").appendChild(tooltip);
     tooltip.style.display = 'block';
     setTimeout(function(){tooltip.parentNode.removeChild(tooltip)}, 10000)
