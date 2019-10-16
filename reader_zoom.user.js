@@ -111,19 +111,27 @@ GM_addStyle (`
   }
 `);
 
+// stores zoom state of a document
 var zoomed = false;
+// stores which page to display
 var slideIndex = 1;
+// stores whether higher DPI images were loaded
 var imageLoaded = false;
+// stores Slate tab that the images were loaded from
 var activeTab;
 
+// creates an overlay that serves as a canvas for the documents
 var overlay = document.createElement('div');
 overlay.id = 'overlayUMich';
 document.body.appendChild(overlay);
 overlay.addEventListener('keydown', key_handler, true);
 overlay.addEventListener('contextmenu', overlayOff);
+// enables scrolling by mouse drag
 overlay.className = 'dragscroll';
+// necessary to enable keyboard controls 
 overlay.tabIndex = -1;
 
+// injects button into Slate Reader to enable the new viewer
 var input = document.createElement('input');
 input.type = 'button';
 input.id = 'buttonUMich';
@@ -131,27 +139,33 @@ input.value = 'Display Larger Image';
 input.onclick = overlayOn;
 document.getElementsByClassName('reader_footer')[0].appendChild(input);
 
+// displays higher DPI documents
 function overlayOn() {
+  // needs to be loaded to determine whether the current Slate tab has any zoomable images or not, displays alert if no images available
   const imageLink = document.querySelector('body > div.reader_viewer.reader_scrollable > div > div.container.active.loaded > div > img');
-
+  
   if (imageLink == null) {
     alert('Navigate to a tab with documents first.');
     return;
   }
-
+  
+  // uses regular expressions to extract data needed to create new HTML elements
   var startPage = 1;
   var currentPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+/);
   var endPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+(?=,)/);
+  // determines which Slate tab is currently in focus
   var targetTab = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent;
 
   if (imageLoaded) {
     if(activeTab !== targetTab){
       while (overlay.firstChild) {
+	// necessary to prevent unused HTML elements from staying
         overlay.removeChild(overlay.firstChild);
       }
       addElements(imageLink, startPage, endPage, currentPage);
       displayTooltip();
     } else {
+      // for whatever reason, parseInt is required to convert variable to a integer
       slideIndex = parseInt(currentPage, 10);
       showSlides(slideIndex);
       displayTooltip();
@@ -163,6 +177,7 @@ function overlayOn() {
   }
 }
 
+// adds HTML elements needed for the userscript to function
 function addElements(imageSrc, startPg, endPg, currPg) {
   var imageNew = imageSrc.src.replace(/z=\d*/, 'z=300');
   for (var i = startPg; i <= endPg; i++) {
@@ -185,24 +200,28 @@ function addElements(imageSrc, startPg, endPg, currPg) {
     document.getElementById('slide' + i).appendChild(imageLoc);
   }
 
+  // creates the arrows on the edges of the screen for switching between pages
   var forward = document.createElement('a');
   forward.className = 'nextUMich';
   forward.onclick = function() {plusSlides(1)};
   forward.innerHTML = '&#10095';
   document.getElementById('overlayUMich').appendChild(forward);
 
+  // creates the arrows on the edges of the screen for switching between pages
   var backward = document.createElement('a');
   backward.className = 'prevUMich';
   backward.onclick = function() {plusSlides(-1)};
   backward.innerHTML = '&#10094';
   document.getElementById('overlayUMich').appendChild(backward);
 
+  // opens the viewer and displays the page currently active in Slate Reader
   slideIndex = parseInt(currPg, 10);
   showSlides(slideIndex);
   imageLoaded = true;
   activeTab = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent;
 }
 
+// handles keyboard inputs
 function key_handler(event) {
   hideTooltip();
   if (event.code == 'ArrowRight') {
@@ -211,12 +230,13 @@ function key_handler(event) {
     plusSlides(-1);
   } else if (event.code == 'Escape') {
     overlayOff();
-  };
+  }
   event.stopPropagation();
 }
 
 function overlayOff() {
   const elements = document.getElementById('imageNew' + slideIndex);
+  // resets the zoom state of displayed document 
   elements.setAttribute('style', 'width:100%');
   document.getElementById('overlayUMich').style.display = 'none';
   hideTooltip();
@@ -230,10 +250,11 @@ function toggleZoom() {
     zoomed=false;
   } else {
     elements.setAttribute('style', 'width:130%');
-    zoomed=true;
+    zoomed = true;
   }
 }
 
+// displays or hides tooltip 
 function displayTooltip() {
   if (document.getElementById('tooltipUMich') == null) {
     var tooltip = document.createElement('div');
@@ -249,6 +270,7 @@ function displayTooltip() {
                         '<strong>contact Ted Ma at <a href="mailto:tedma@umich.edu">tedma@umich.edu</a>.</strong></p>';
     document.getElementById('overlayUMich').appendChild(tooltip);
     tooltip.style.display = 'block';
+    // automatically hides tooltip after 10 seconds
     setTimeout(function(){tooltip.parentNode.removeChild(tooltip)}, 10000)
   } else {
     tooltip.style.display = 'block';
@@ -264,6 +286,7 @@ function hideTooltip() {
   }
 }
 
+// handles which page to show
 function plusSlides(n) {
   const elements = document.getElementById('imageNew' + slideIndex);
   elements.setAttribute('style', 'width: 100%');
@@ -283,6 +306,7 @@ function showSlides(n) {
   slides[slideIndex-1].style.display = 'block';
 }
 
+// literally just copy pasted code from asvd's dragscroll library. overlayUMmich is assigned ID of dragscroll
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     define(['exports'], factory);
@@ -291,7 +315,7 @@ function showSlides(n) {
   } else {
     factory((root.dragscroll = {}));
   }
-}(this, function (exports) {
+} (this, function (exports) {
   var _window = window;
   var _document = document;
   var mousemove = 'mousemove';
