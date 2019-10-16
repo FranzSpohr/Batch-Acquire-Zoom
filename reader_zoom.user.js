@@ -9,7 +9,7 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
-//hey dumb-dumb, you gotta fix how some documents won't load if the DPI is too high
+//hey dumb-dumb, you gotta fix how some documents won't load if the DPI is too high, use 200 DPI
 
 //creates necessary CSS for userscript to function 
 GM_addStyle (`
@@ -111,33 +111,31 @@ GM_addStyle (`
   }
 `);
 
-/*
-*/
-var zoomed = false
+var zoomed = false;
 var slideIndex = 1;
 var imageLoaded = false;
 var activeTab;
 
-var overlay = document.createElement("div");
+var overlay = document.createElement('div');
 overlay.id = 'overlayUMich';
 document.body.appendChild(overlay);
 overlay.addEventListener('keydown', key_handler, true);
-overlay.addEventListener('contextmenu', overlayOff)
-overlay.className = 'dragscroll'
+overlay.addEventListener('contextmenu', overlayOff);
+overlay.className = 'dragscroll';
 overlay.tabIndex = -1;
 
-var input=document.createElement("input");
-input.type="button";
-input.id = 'buttonUMich'
-input.value="Display Larger Image";
+var input = document.createElement('input');
+input.type = 'button';
+input.id = 'buttonUMich';
+input.value = 'Display Larger Image';
 input.onclick = overlayOn;
 document.getElementsByClassName('reader_footer')[0].appendChild(input);
 
 function overlayOn() {
-  const imageLink = document.querySelector("body > div.reader_viewer.reader_scrollable > div > div.container.active.loaded > div > img");
+  const imageLink = document.querySelector('body > div.reader_viewer.reader_scrollable > div > div.container.active.loaded > div > img');
 
   if (imageLink == null) {
-    alert("Navigate to a tab with documents first.");
+    alert('Navigate to a tab with documents first.');
     return;
   }
 
