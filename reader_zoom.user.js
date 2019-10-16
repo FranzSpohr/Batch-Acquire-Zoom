@@ -254,7 +254,7 @@ function toggleZoom() {
   }
 }
 
-// displays or hides tooltip 
+// displays tooltip 
 function displayTooltip() {
   if (document.getElementById('tooltipUMich') == null) {
     var tooltip = document.createElement('div');
