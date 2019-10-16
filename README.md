@@ -4,7 +4,7 @@
 Currently, the vanilla document zoom functionalities offered by Slate in Reader and Batch Acquire is rather limited, especially when dealing with dense documents with small texts. These 2 Tampermonkey/Greasemonkey userscripts will give users more flexibility in how they view and interact with documents while viewing and handling them in Slate Reader or Slate Batch Acquire.
 
 ## **Slate Reader Zoom**
->Once installed, you'll see a button labeled "Display Larger Image" in the footer section of Slate Reader. Click on the button to display the document with higher zoom. 
+>Once installed, you'll see a button labeled **"Display Larger Image"** in the footer section of Slate Reader. Click on the button to display the document with higher zoom. 
 
 ##### **Controls**
 
