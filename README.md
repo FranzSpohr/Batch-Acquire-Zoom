@@ -6,21 +6,21 @@ Currently, the vanilla document zoom functionalities offered by Slate in Reader 
 ## **Slate Reader Zoom**
 >Once installed, you'll see a button labeled **"Display Larger Image"** in the footer section of Slate Reader. Click on the button to display the document with higher zoom. 
 
-##### **Controls**
+**Controls**
 
-**Mouse**
+##### **Mouse**
 * Navigate between pages by ***left-clicking*** on arrows near the edges of the screen
 * **Hold-Down Left Click & Drag:** scroll document
 * **Left Click:** Toggle between the zoom levels
 * **Right Click:** Return to reader
 
-**Keyboard**
+##### **Keyboard**
 * **Left Arrow:** Previous page
 * **Right Arrow:** Next page 
 * **Esc:** Return to reader
 
 ## **Batch Acquire Zoom**
-> Controls
+**Controls**
 
 ##### To zoom-in:
 
