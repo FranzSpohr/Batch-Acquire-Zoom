@@ -32,9 +32,9 @@ function Toggle_Zoom(event) {
     // selects image elements loaded by batch acquire
     const elements = document.querySelectorAll('.batch_page_container > img');
     // replaces the existing "z" value in the URL of documents
-    elements.forEach(function (el) {
+    elements.forEach(function(el) {
       if (el.src.includes(`z=${Zoom_Levels[zoomCount]}`)) {
-        el.src = el.src.replace(`z=${Zoom_Levels[zoomCount]}`, `z=${Zoom_Levels[zoomCount+1]}`);
+        el.src = el.src.replace(`z=${Zoom_Levels[zoomCount]}`, `z=${Zoom_Levels[zoomCount + 1]}`);
       }
     });
     zoomCount++;
@@ -43,9 +43,9 @@ function Toggle_Zoom(event) {
     event.preventDefault();
     if (zoomCount == 0) {return};
     const elements = document.querySelectorAll('.batch_page_container > img');
-    elements.forEach(function (el) {
+    elements.forEach(function(el) {
       if (el.src.includes(`z=${Zoom_Levels[zoomCount]}`)) {
-        el.src = el.src.replace(`z=${Zoom_Levels[zoomCount]}`, `z=${Zoom_Levels[zoomCount-1]}`);
+        el.src = el.src.replace(`z=${Zoom_Levels[zoomCount]}`, `z=${Zoom_Levels[zoomCount - 1]}`);
       }
     });
     zoomCount--;
@@ -57,11 +57,13 @@ function Add_Listener () {
   if (ListenerAdded) {
     return;
   } else {
+    // grabs images and attaches listeners
     const elements = document.querySelectorAll('.batch_page_container > img');
     elements.forEach(function (el) {
       el.addEventListener('click', Toggle_Zoom, true)
       el.addEventListener('contextmenu', Toggle_Zoom, true)
     });
+    // needed to determine whether "next" buttons, etc. are pressed, meaning listeners have to be attached again
     const buttons = document.querySelectorAll('button[type="button"]');
     buttons.forEach(function (el) {
       el.addEventListener('click', function () {
@@ -73,7 +75,8 @@ function Add_Listener () {
   }
 }
 
-// kinda janky way to automatically close the useless magnifying glass that Slate has
+/* kinda janky way to automatically close the useless magnifying glass that Slate has by 
+immediately simulating a left mouse click to close the magnifier*/ 
 function Click_Zoomer () {
   var targetNode = document.getElementsByClassName('batch_zoomer boxshadow')[0];
   if (targetNode) {
