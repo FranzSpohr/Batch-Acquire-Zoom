@@ -149,60 +149,59 @@ function overlayOn() {
       while (overlay.firstChild) {
         overlay.removeChild(overlay.firstChild);
       }
-      addElements(imageLink,startPage,endPage,currentPage)
-      displayTooltip()
+      addElements(imageLink, startPage, endPage, currentPage);
+      displayTooltip();
     } else {
-      slideIndex = parseInt(currentPage,10);
+      slideIndex = parseInt(currentPage, 10);
       showSlides(slideIndex);
-      displayTooltip()
+      displayTooltip();
       return;
     }
   } else {
-    addElements(imageLink,startPage,endPage,currentPage);
+    addElements(imageLink, startPage, endPage, currentPage);
     displayTooltip();
   }
 }
 
-function addElements(imageSrc,startPg,endPg,currPg) {
+function addElements(imageSrc, startPg, endPg, currPg) {
   var imageNew = imageSrc.src.replace(/z=\d*/, 'z=300');
-
   for (var i = startPg; i <= endPg; i++) {
     imageNew = imageNew.replace(/pg=\d*/, `pg=${i-1}`);
-    var slide = document.createElement("div");
-    slide.id = 'slide'+i;
+    var slide = document.createElement('div');
+    slide.id = 'slide' + i;
     slide.className = 'mySlidesUMich fadeUMich';
-    document.getElementById("overlayUMich").appendChild(slide);
+    document.getElementById('overlayUMich').appendChild(slide);
 
-    var pgCounter = document.createElement("div");
-    pgCounter.className = "numbertextUMich";
-    pgCounter.innerHTML = i+'/'+endPg;
-    document.getElementById("slide"+i).appendChild(pgCounter);
+    var pgCounter = document.createElement('div');
+    pgCounter.className = 'numbertextUMich';
+    pgCounter.innerHTML = i + '/' + endPg;
+    document.getElementById('slide' + i).appendChild(pgCounter);
 
-    var imageLoc = document.createElement("img");
+    var imageLoc = document.createElement('img');
     imageLoc.id = 'imageNew' + i;
     imageLoc.src = imageNew;
     imageLoc.style.width = '100%';
-    imageLoc.onclick = toggleZoom
-    document.getElementById("slide"+i).appendChild(imageLoc);
+    imageLoc.onclick = toggleZoom;
+    document.getElementById('slide' + i).appendChild(imageLoc);
   }
 
-  var forward = document.createElement("a");
-  forward.className = "nextUMich";
-  forward.onclick = function(){plusSlides(1)};
-  forward.innerHTML = "&#10095;";
-  document.getElementById("overlayUMich").appendChild(forward);
+  var forward = document.createElement('a');
+  forward.className = 'nextUMich';
+  forward.onclick = function() {plusSlides(1)};
+  forward.innerHTML = '&#10095';
+  document.getElementById('overlayUMich').appendChild(forward);
 
-  var backward = document.createElement("a");
-  backward.className = "prevUMich";
-  backward.onclick = function(){plusSlides(-1)};
-  backward.innerHTML = "&#10094;";
-  document.getElementById("overlayUMich").appendChild(backward);
+  var backward = document.createElement('a');
+  backward.className = 'prevUMich';
+  backward.onclick = function() {plusSlides(-1)};
+  backward.innerHTML = '&#10094';
+  document.getElementById('overlayUMich').appendChild(backward);
 
   slideIndex = parseInt(currPg, 10);
   showSlides(slideIndex);
   imageLoaded = true;
   activeTab = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent;
-};
+}
 
 function key_handler(event) {
   hideTooltip();
@@ -214,30 +213,30 @@ function key_handler(event) {
     overlayOff();
   };
   event.stopPropagation();
-};
+}
 
 function overlayOff() {
-  const elements = document.getElementById('imageNew'+slideIndex);
-  elements.setAttribute("style", "width:100%;");
-  document.getElementById("overlayUMich").style.display = "none";
+  const elements = document.getElementById('imageNew' + slideIndex);
+  elements.setAttribute('style', 'width:100%');
+  document.getElementById('overlayUMich').style.display = 'none';
   hideTooltip();
-};
+}
 
-function toggleZoom () {
-  const elements = document.getElementById('imageNew'+slideIndex);
+function toggleZoom() {
+  const elements = document.getElementById('imageNew' + slideIndex);
   hideTooltip();
   if (zoomed) {
-    elements.setAttribute("style", "width:100%;");
+    elements.setAttribute('style', 'width:100%');
     zoomed=false;
   } else {
-    elements.setAttribute("style", "width:130%;");
+    elements.setAttribute('style', 'width:130%');
     zoomed=true;
   }
 }
 
-function displayTooltip () {
+function displayTooltip() {
   if (document.getElementById('tooltipUMich') == null) {
-    var tooltip = document.createElement("div");
+    var tooltip = document.createElement('div');
     tooltip.id = 'tooltipUMich';
     tooltip.innerHTML = '<p>Navigate between pages by<strong>&nbsp;left clicking on arrows&nbsp;</strong>near the edges of the screen.</p>' +
                         '<ul><li><strong>Esc Key:&nbsp;</strong>Return to reader</li>' +
@@ -248,41 +247,41 @@ function displayTooltip () {
                         '<li><strong>Hold Left Click &amp; Mouse Drag</strong>: Scroll document</li></ul>' +
                         '<p>If you encounter any bugs and/or glitches or have any suggestions or requests, <br> please' + 
                         '<strong>contact Ted Ma at <a href="mailto:tedma@umich.edu">tedma@umich.edu</a>.</strong></p>';
-    document.getElementById("overlayUMich").appendChild(tooltip);
+    document.getElementById('overlayUMich').appendChild(tooltip);
     tooltip.style.display = 'block';
     setTimeout(function(){tooltip.parentNode.removeChild(tooltip)}, 10000)
   } else {
     tooltip.style.display = 'block';
   }
   overlay.style.display = "block";
-  overlay.focus()
+  overlay.focus();
 }
 
-function hideTooltip () {
+function hideTooltip() {
   var tooltip = document.getElementById('tooltipUMich');
-  if (tooltip != null){
+  if (tooltip != null) {
     tooltip.parentNode.removeChild(tooltip);
   }
 }
 
 function plusSlides(n) {
-  const elements = document.getElementById('imageNew'+slideIndex);
-  elements.setAttribute("style", "width:100%;");
+  const elements = document.getElementById('imageNew' + slideIndex);
+  elements.setAttribute('style', 'width: 100%');
   showSlides(slideIndex += n);
   overlay.scrollTo(0,0);
-  zoomed=false;
-};
+  zoomed = false;
+}
 
 function showSlides(n) {
   var i;
-  var slides = document.getElementsByClassName("mySlidesUMich");
+  var slides = document.getElementsByClassName('mySlidesUMich');
   if (n > slides.length) {slideIndex = 1};
   if (n < 1) {slideIndex = slides.length};
   for (i = 0; i < slides.length; i++) {
-    slides[i].style.display = "none";
-  };
-  slides[slideIndex-1].style.display = "block";
-};
+    slides[i].style.display = 'none';
+  }
+  slides[slideIndex-1].style.display = 'block';
+}
 
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
