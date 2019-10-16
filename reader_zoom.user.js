@@ -121,7 +121,7 @@ var imageLoaded = false;
 // stores Slate tab that the images were loaded from
 var activeTab;
 
-// creates an overlay that serves as a canvas for the documents
+// creates an overlay that serves as a container for the documents
 var overlay = document.createElement('div');
 overlay.id = 'overlayUMich';
 document.body.appendChild(overlay);
@@ -156,10 +156,10 @@ function overlayOn() {
   var endPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+(?=,)/);
 
   // determines which Slate tab is currently being displayed
-  var targetTab = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent;
+  var targetTab = document.getElementsByClassName('stream active')[0].innerHTML;
 
   if (imageLoaded) {
-	  // determines whether the Slate tab in use has changed. If changed, deletes existing HTML elements and creates new ones
+	// determines whether the Slate tab in use has changed. If changed, deletes existing HTML elements and creates new ones
     if(activeTab !== targetTab){
       while (overlay.firstChild) {
 	    // necessary to prevent unused HTML elements from cluttering the page
@@ -232,7 +232,7 @@ function addElements(imageSrc, startPg, endPg, currPg) {
   slideIndex = parseInt(currPg, 10);
   showSlides(slideIndex);
   imageLoaded = true;
-  activeTab = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent;
+  activeTab = document.getElementsByClassName('stream active')[0].innerHTML;
 }
 
 // handles keyboard inputs
@@ -280,7 +280,7 @@ function displayTooltip() {
                       '<li><strong>Right Arrow Key:&nbsp;</strong>Next page</li>' +
                       '<li><strong>Left Click:</strong> Toggle between zoom levels</li>' +
                       '<li><strong>Hold Left Click &amp; Mouse Drag</strong>: Scroll document</li></ul>' +
-                      '<p>If you encounter any bugs and/or glitches or have any suggestions or requests, <br> please' +
+                      '<p>If you encounter any bugs and/or glitches or have any suggestions or requests, <br>' +
                       '<strong>contact Ted Ma at <a href="mailto:tedma@umich.edu">tedma@umich.edu</a>.</strong></p>';
   document.getElementById('overlayUMich').appendChild(tooltip);
   tooltip.style.display = 'block';
