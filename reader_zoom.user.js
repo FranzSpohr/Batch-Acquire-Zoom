@@ -247,7 +247,7 @@ function displayTooltip () {
                         '<li><strong>Left Click:</strong> Toggle between zoom levels</li>' +
                         '<li><strong>Hold Left Click &amp; Mouse Drag</strong>: Scroll document</li></ul>' +
                         '<p>If you encounter any bugs and/or glitches or have<br>any suggestions or requests, please' + 
-                        '<strong>contact Ted Ma at <a href="mailto:tedma@umich.edu">tedma@umich.edu</a>.</strong></p>' +
+                        '<strong>contact Ted Ma at <a href="mailto:tedma@umich.edu">tedma@umich.edu</a>.</strong></p>';
     document.getElementById("overlayUMich").appendChild(tooltip);
     tooltip.style.display = 'block';
     setTimeout(function(){tooltip.parentNode.removeChild(tooltip)}, 10000)
