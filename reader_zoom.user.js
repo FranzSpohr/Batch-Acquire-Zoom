@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Slate Reader Zoom
 // @namespace    https://umich.edu/
-// @version      10.17.19
+// @version      10.18.19
 // @description  For Slate Reader. Opens a page with a highder DPI render of document. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/reader/*
@@ -29,16 +29,17 @@ GM_addStyle (`
 
   #tooltipUMich {
     border-radius: 25px;
-    border: 1px solid #00274c;
+    border: 2px solid #00274c;
     position: fixed;
     width: auto;
     height: auto;
     top: 2.0%;
     right: 1.5%;
-    color: black;
-    background-color: rgba(192, 192, 192, .95);
+    font-size: 15px;
+    color: white;
+    background-color: rgba(0, 39, 76, .975);
     text-align: justify;
-    padding: 16px;
+    padding: 16px 30px;
   }
 
   #buttonUMich {
@@ -48,7 +49,6 @@ GM_addStyle (`
     height: 25px;
   }
 
-  // contains navigation dots
   #dotContainerUMich {
     text-align: center;
     position: fixed;
@@ -62,7 +62,6 @@ GM_addStyle (`
 	display: none
   }
 
-  // buttons for page nvaigation on edges of the screen
   .prevUMich, .nextUMich {
     cursor: pointer;
     position: fixed;
@@ -81,7 +80,6 @@ GM_addStyle (`
     user-select: none;
   }
 
-  // page navigation button on the right needs a seaparate right value due to the scroll bar being present
   .nextUMich {
     right: 1%;
     border-radius: 3px 0 0 3px;
@@ -120,7 +118,6 @@ GM_addStyle (`
     background-color: rgb(0,39,76);
   }
 
-  // little tooltip box that appears above dots with page info
   .dotUMich .dotHoverUMich {
     visibility: hidden;
     width: auto;
@@ -222,7 +219,6 @@ function overlayOn() {
 
 // adds HTML elements needed for the userscript to function
 function addElements(imageSrc, startPg, endPg, currPg) {
-	
   // creates anchor elements on the edges of the screen for switching between pages
   var forward = document.createElement('a');
   forward.className = 'nextUMich';
@@ -236,7 +232,7 @@ function addElements(imageSrc, startPg, endPg, currPg) {
   backward.onclick = function() {plusSlides(-1)};
   backward.innerHTML = '&#10094';
   document.getElementById('overlayUMich').appendChild(backward);
-  
+
   // container for the navigation dots
   var dotContainer = document.createElement('div');
   dotContainer.id = 'dotContainerUMich'
@@ -281,6 +277,7 @@ function addElements(imageSrc, startPg, endPg, currPg) {
     imageElement.onerror = function() {errorDPI -= 10; this.src = this.src.replace(/z=\d*/, `z=${errorDPI}`)};
     document.getElementById('slide_' + i).appendChild(imageElement);
   }
+
   // opens the viewer and displays the page currently being displayed in Slate Reader
   slideIndex = parseInt(currPg, 10);
   showSlides(slideIndex);
@@ -298,7 +295,7 @@ function key_handler(event) {
   } else if (event.code == 'Escape') {
     overlayOff();
   }
-  event.stopPropagation(); // without this, pages in Slate Reader will scroll with the zoomed viewer. 
+  event.stopPropagation(); // without this, pages in Slate Reader will scroll with the zoomed viewer.
 }
 
 function overlayOff() {
@@ -326,22 +323,22 @@ function toggleZoom() {
 function displayTooltip() {
   var tooltip = document.createElement('div');
   tooltip.id = 'tooltipUMich';
-  tooltip.innerHTML = '<p>Navigate between pages by<strong>&nbsp;left clicking on arrows&nbsp;</strong>near the edges of the screen.</p>' +
-                      '<p><strong>Left click on the dotss&nbsp;</strong>on the bottom to jump between pages.</p>' +
-                      '<ul><li><strong>Esc Key:&nbsp;</strong>Return to reader</li>' +
-                      '<li><strong>Right Click:&nbsp;</strong>Return to reader</li>' +
-	              '<br><li><strong>Up Arrow Key:</strong> Scroll up</li>' +
-                      '<li><strong>Down Arrow Key:</strong> Scroll down</li>' +
-                      '<li><strong>Left Arrow Key:</strong> Previous page</li>' +
-                      '<li><strong>Right Arrow Key:&nbsp;</strong>Next page</li>' +
-                      '<br><li><strong>Left Click:</strong> Toggle between zoom levels</li>' +
-                      '<li><strong>Hold Left Click &amp; Mouse Drag</strong>: Scroll document</li></ul>' +
-                      '<p>If you encounter any bugs and/or glitches or have any suggestions or requests, <br>' +
-                      '<strong>contact Ted Ma at <a href="mailto:tedma@umich.edu">tedma@umich.edu</a>.</strong></p>';
+  tooltip.innerHTML = '<p>Navigate between pages by<strong><font color="#ffcb05">&nbsp;left clicking on arrows</font></strong>&nbsp;near<br>the edges of the screen.</p>' +
+                      '<p><strong><font color="#ffcb05">Left click on the dots&nbsp;</font></strong>on the bottom to jump between pages.</p>' +
+                      '<ul><li><strong><font color="#ffcb05">Esc Key:&nbsp;</font></strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Return to reader</li>' +
+                      '<li><strong><font color="#ffcb05">Right Click:&nbsp;</font></strong>&nbsp;&nbsp;&nbsp;Return to reader</li>' +
+	              '<br><li><strong><font color="#ffcb05">Up Arrow Key:</font></strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Scroll up</li>' +
+                      '<li><strong><font color="#ffcb05">Down Arrow Key:</font></strong>&nbsp;&nbsp; Scroll down</li>' +
+                      '<li><strong><font color="#ffcb05">Left Arrow Key:</font></strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Previous page</li>' +
+                      '<li><strong><font color="#ffcb05">Right Arrow Key:</font></strong>&nbsp;&nbsp;&nbsp;&nbsp;Next page</li>' +
+                      '<br><li><strong><font color="#ffcb05">Left Click:</font></strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Toggle between zoom levels</li>' +
+                      '<li><strong><font color="#ffcb05">Hold Left Click &amp; Mouse Drag:</font></strong> &nbsp;&nbsp;&nbsp;Scroll document</li></ul>' +
+                      '<p>If you encounter any bugs and/or glitches or have any suggestions<br> or requests, ' +
+                      '<strong>contact Ted Ma at <a style="color: #ffcb05" href="mailto:tedma@umich.edu">tedma@umich.edu</a>.</strong></p>';
   document.getElementById('overlayUMich').appendChild(tooltip);
   tooltip.style.display = 'block';
   // automatically hides tooltip after 10 seconds
-  setTimeout(function() {if (document.getElementById('tooltipUMich') == null) {return;} else {tooltip.parentNode.removeChild(tooltip)}}, 10000)
+  setTimeout(function() {if (document.getElementById('tooltipUMich') == null) {return;} else {tooltip.parentNode.removeChild(tooltip)}}, 15000)
   overlay.style.display = 'block';
   overlay.focus();
 }
