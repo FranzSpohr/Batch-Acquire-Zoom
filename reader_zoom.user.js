@@ -106,7 +106,7 @@ GM_addStyle (`
     background-color: rgba(0,0,0,0.5);
     color: white !important;
   }
-  
+
 /*
 * page number display
 */
@@ -182,8 +182,8 @@ GM_addStyle (`
     visibility: visible;
     opacity: 1;
   }
-  
-/* 
+
+/*
 * CSS for pop-up tooltip. Table is used to format the tutorial text.
 */
   #tableUMich {
@@ -482,7 +482,7 @@ function showSlides(n) {
       _window[removeEventListener](mousemove, el.mm, 0);
       _document[removeEventListener](mouseenter, el.me, 0);
     }
-	
+
     // cloning into array since HTMLCollection is updated dynamically
     dragged = [].slice.call(_document.getElementsByClassName('dragscroll'));
     for (i = 0; i < dragged.length;) {
