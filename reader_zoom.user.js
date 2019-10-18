@@ -10,7 +10,7 @@
 // ==/UserScript==
 
 // creates necessary CSS for the userscript to function.
-// names are intentionally garish to avoid any existing CSS
+// names are intentionally garish to avoid overlap with any existing Slate CSS
 GM_addStyle (`
   #overlayUMich {
     overflow: auto;
@@ -31,8 +31,8 @@ GM_addStyle (`
     border-radius: 25px;
     border: 2px solid #00274c;
     position: fixed;
-    width: auto;
-    height: auto;
+    width: 380px;
+    height: 370px;
     top: 2.0%;
     right: 1.5%;
     font-size: 15px;
@@ -152,6 +152,29 @@ GM_addStyle (`
   .dotUMich:hover .dotHoverUMich {
     visibility: visible;
     opacity: 1;
+  }
+
+  #tableUMich {
+    margin-left: 3%;
+    table-layout: fixed;
+    width: 85%;
+  }
+
+  .cellKeyUMich{
+    text-align: left;
+    word-wrap: break-word;
+    color: #ffcb05;
+    font-weight: bold;
+    width: 155px;
+  }
+
+  .cellNavUMich{
+    text-align: left;
+    width: 300px;
+  }
+
+  .cellBlankUMich{
+    height: 15px;
   }
 `);
 
@@ -323,18 +346,7 @@ function toggleZoom() {
 function displayTooltip() {
   var tooltip = document.createElement('div');
   tooltip.id = 'tooltipUMich';
-  tooltip.innerHTML = '<p>Navigate between pages by<strong><font color="#ffcb05">&nbsp;left clicking on arrows</font></strong>&nbsp;near<br>the edges of the screen.</p>' +
-                      '<p><strong><font color="#ffcb05">Left click on the dots&nbsp;</font></strong>on the bottom to jump between pages.</p>' +
-                      '<ul><li><strong><font color="#ffcb05">Esc Key:&nbsp;</font></strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Return to reader</li>' +
-                      '<li><strong><font color="#ffcb05">Right Click:&nbsp;</font></strong>&nbsp;&nbsp;&nbsp;Return to reader</li>' +
-	              '<br><li><strong><font color="#ffcb05">Up Arrow Key:</font></strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Scroll up</li>' +
-                      '<li><strong><font color="#ffcb05">Down Arrow Key:</font></strong>&nbsp;&nbsp; Scroll down</li>' +
-                      '<li><strong><font color="#ffcb05">Left Arrow Key:</font></strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Previous page</li>' +
-                      '<li><strong><font color="#ffcb05">Right Arrow Key:</font></strong>&nbsp;&nbsp;&nbsp;&nbsp;Next page</li>' +
-                      '<br><li><strong><font color="#ffcb05">Left Click:</font></strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Toggle between zoom levels</li>' +
-                      '<li><strong><font color="#ffcb05">Hold Left Click &amp; Mouse Drag:</font></strong> &nbsp;&nbsp;&nbsp;Scroll document</li></ul>' +
-                      '<p>If you encounter any bugs and/or glitches or have any suggestions<br> or requests, ' +
-                      '<strong>contact Ted Ma at <a style="color: #ffcb05" href="mailto:tedma@umich.edu">tedma@umich.edu</a>.</strong></p>';
+  tooltip.innerHTML = tooltipText
   document.getElementById('overlayUMich').appendChild(tooltip);
   tooltip.style.display = 'block';
   // automatically hides tooltip after 10 seconds
@@ -342,6 +354,20 @@ function displayTooltip() {
   overlay.style.display = 'block';
   overlay.focus();
 }
+
+// texts for tooltip
+const tooltipText =
+      "<p>Navigate between pages by<strong><font color='#ffcb05'>&nbsp;left clicking on arrows</font></strong><br>at the edges of the screen.</p>" +
+      "<p><strong><font color='#ffcb05'>Left click on the dots&nbsp;</font></strong>near the bottom of the screen<br>to jump between pages.</p>" +
+      "<table id='tableUMich'><tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Esc Key:</td><td class='cellNavUMich'>Return to reader</td></tr>" +
+      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Right Click:</td><td class='cellNavUMich'>Return to reader</td></tr><tr class='cellBlankUMich'><td colspan='3'></td></tr>" +
+      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Up Arrow Key:</td><td class='cellNavUMich'>Scroll up</td></tr>" +
+      "<tr></tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Down Arrow Key:</td><td class='cellNavUMich'>Scroll down</td></tr>" +
+      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Left Arrow Key:</td><td class='cellNavUMich'>Previous page</td></tr>" +
+      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Right Arrow Key:</td><td class='cellNavUMich'>Next page</td></tr><tr class='cellBlankUMich'><td colspan='3'></td></tr>" +
+      "<tr></tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Left Click:</td><td class='cellNavUMich'>Toggle between zoom levels</td></tr>" +
+      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Left Click &<br> Mouse Drag:</td><td class='cellNavUMich'>Scroll document</td></tr></table>" +
+      "<p>If you encounter issues or have any suggestions or<br>requests, contact Teddy Ma at <a style='color: #ffcb05' href='mailto:tedma@umich.edu'>tedma@umich.edu</a>.</b></p>"
 
 // HTML element for the tooltip destroyed after each instance to prevent clutter
 function hideTooltip() {
