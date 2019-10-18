@@ -10,8 +10,10 @@
 // ==/UserScript==
 
 // creates necessary CSS for the userscript to function.
-// names are intentionally garish to avoid overlap with any existing Slate CSS
 GM_addStyle (`
+/*
+* names are intentionally garish to avoid overlap with any existing Slate CSS
+*/
   #overlayUMich {
     overflow: auto;
     position: fixed;
@@ -42,6 +44,9 @@ GM_addStyle (`
     padding: 16px 30px;
   }
 
+/*
+* button for Slate Reader to invoke overlay
+*/
   #buttonUMich {
     font-size: 13px;
     position: absolute;
@@ -49,6 +54,9 @@ GM_addStyle (`
     height: 25px;
   }
 
+/*
+* container for dots, centers dots in center
+*/
   #dotContainerUMich {
     text-align: center;
     position: fixed;
@@ -58,10 +66,16 @@ GM_addStyle (`
     transform: translate(-50%, -50%);
   }
 
+/*
+* container for images
+*/
   .mySlidesUMich {
 	display: none
   }
 
+/*
+* navigation buttons on edges of screens
+*/
   .prevUMich, .nextUMich {
     cursor: pointer;
     position: fixed;
@@ -80,6 +94,9 @@ GM_addStyle (`
     user-select: none;
   }
 
+/*
+* needed due to scroll bar. Element becomes covered by scroll bar otherwise.
+*/
   .nextUMich {
     right: 1%;
     border-radius: 3px 0 0 3px;
@@ -89,19 +106,25 @@ GM_addStyle (`
     background-color: rgba(0,0,0,0.5);
     color: white !important;
   }
-
+  
+/*
+* page number display
+*/
   .numbertextUMich {
-    border-radius:  25px;
+    border-radius:  10px;
     border: 1px solid #00274c;
-    color: #000000;
-    font-size: 20px;
+    color: white;
+    font-size: 15px;
     padding: 6px 10px;
     position: fixed;
     top: 5px;
     left: 5px;
-    background-color: rgba(192, 192, 192, 0.5);
+    background-color: rgba(0, 39, 76, .75);
   }
 
+/*
+* for page navigation dots on bottom
+*/
   .dotUMich {
     cursor: pointer;
     height: 15px;
@@ -114,10 +137,16 @@ GM_addStyle (`
     position: relative;
   }
 
+/*
+* highlights the correct dot for the page
+*/
   .activeUMich, .dotUMich:hover {
     background-color: rgb(0,39,76);
   }
 
+/*
+* displays arrow box above corresponding dots
+*/
   .dotUMich .dotHoverUMich {
     visibility: hidden;
     width: auto;
@@ -153,7 +182,10 @@ GM_addStyle (`
     visibility: visible;
     opacity: 1;
   }
-
+  
+/* 
+* CSS for pop-up tooltip. Table is used to format the tutorial text.
+*/
   #tableUMich {
     margin-left: 3%;
     table-layout: fixed;
@@ -220,7 +252,7 @@ function overlayOn() {
 
   if (imageLoaded) {
 	// determines whether the Slate tab in use has changed. If changed, deletes existing HTML elements and creates new ones
-    if(activeTab !== targetTab){
+    if(activeTab !== targetTab) {
       while (overlay.firstChild) {
 	    // necessary to prevent unused HTML elements from cluttering the page
         overlay.removeChild(overlay.firstChild);
@@ -258,7 +290,7 @@ function addElements(imageSrc, startPg, endPg, currPg) {
 
   // container for the navigation dots
   var dotContainer = document.createElement('div');
-  dotContainer.id = 'dotContainerUMich'
+  dotContainer.id = 'dotContainerUMich';
   document.getElementById('overlayUMich').appendChild(dotContainer);
 
   for (let i = startPg; i <= endPg; i++) {
@@ -271,7 +303,7 @@ function addElements(imageSrc, startPg, endPg, currPg) {
     // page counter on the upper left corner
     var pgCounter = document.createElement('div');
     pgCounter.className = 'numbertextUMich';
-    pgCounter.innerHTML = i + '/' + endPg;
+    pgCounter.innerHTML = 'Page ' + i + ' of ' + endPg;
     document.getElementById('slide_' + i).appendChild(pgCounter);
 
 	// dots that can be used to navigate pages
@@ -346,11 +378,11 @@ function toggleZoom() {
 function displayTooltip() {
   var tooltip = document.createElement('div');
   tooltip.id = 'tooltipUMich';
-  tooltip.innerHTML = tooltipText
+  tooltip.innerHTML = tooltipText;
   document.getElementById('overlayUMich').appendChild(tooltip);
   tooltip.style.display = 'block';
   // automatically hides tooltip after 10 seconds
-  setTimeout(function() {if (document.getElementById('tooltipUMich') == null) {return;} else {tooltip.parentNode.removeChild(tooltip)}}, 15000)
+  setTimeout(function() {if (document.getElementById('tooltipUMich') == null) {return;} else {tooltip.parentNode.removeChild(tooltip)}}, 15000);
   overlay.style.display = 'block';
   overlay.focus();
 }
@@ -450,7 +482,7 @@ function showSlides(n) {
       _window[removeEventListener](mousemove, el.mm, 0);
       _document[removeEventListener](mouseenter, el.me, 0);
     }
-
+	
     // cloning into array since HTMLCollection is updated dynamically
     dragged = [].slice.call(_document.getElementsByClassName('dragscroll'));
     for (i = 0; i < dragged.length;) {
@@ -515,7 +547,6 @@ function showSlides(n) {
       })(dragged[i++]);
     }
   }
-
 
   if (_document.readyState == 'complete') {
     reset();
