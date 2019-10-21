@@ -13,12 +13,10 @@
 
 // stores current zoom level
 var zoomCount = 0;
-
 // stores whether event listeners were added
 var ListenerAdded = false
-
 // "z" value that Slate requires to determine size of the document render
-var Zoom_Levels = [72, 108, 144, 180, 216];
+var zoom_Levels = [72, 108, 144, 180, 216];
 
 window.addEventListener('keydown', Toggle_Zoom, true);
 window.addEventListener('click', Add_Listener, true);
@@ -33,11 +31,10 @@ function Toggle_Zoom(event) {
     }
     // selects image elements loaded by batch acquire
     const elements = document.querySelectorAll('.batch_page_container > img');
-    
     // replaces the existing "z" value in the URL of documents
     elements.forEach(function(el) {
-      if (el.src.includes(`z=${Zoom_Levels[zoomCount]}`)) {
-        el.src = el.src.replace(`z=${Zoom_Levels[zoomCount]}`, `z=${Zoom_Levels[zoomCount + 1]}`);
+      if (el.src.includes(`z=${zoom_Levels[zoomCount]}`)) {
+        el.src = el.src.replace(`z=${zoom_Levels[zoomCount]}`, `z=${zoom_Levels[zoomCount + 1]}`);
       }
     });
     zoomCount++;
@@ -47,8 +44,8 @@ function Toggle_Zoom(event) {
     if (zoomCount == 0) {return};
     const elements = document.querySelectorAll('.batch_page_container > img');
     elements.forEach(function(el) {
-      if (el.src.includes(`z=${Zoom_Levels[zoomCount]}`)) {
-        el.src = el.src.replace(`z=${Zoom_Levels[zoomCount]}`, `z=${Zoom_Levels[zoomCount - 1]}`);
+      if (el.src.includes(`z=${zoom_Levels[zoomCount]}`)) {
+        el.src = el.src.replace(`z=${zoom_Levels[zoomCount]}`, `z=${zoom_Levels[zoomCount - 1]}`);
       }
     });
     zoomCount--;
@@ -78,8 +75,8 @@ function Add_Listener () {
   }
 }
 
-/* kinda janky way to automatically close the useless magnifying glass that Slate has by 
-immediately simulating a left mouse click to close the magnifier*/ 
+/* kinda janky way to automatically close the useless magnifying glass that Slate has by
+immediately simulating a left mouse click to close the magnifier*/
 function Click_Zoomer () {
   var targetNode = document.getElementsByClassName('batch_zoomer boxshadow')[0];
   if (targetNode) {
