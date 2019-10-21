@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Slate Reader Zoom
 // @namespace    https://umich.edu/
-// @version      10.19.19
+// @version      10.21.19
 // @description  For Slate Reader. Opens a page with a highder DPI render of document. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/reader/*
@@ -210,10 +210,12 @@ GM_addStyle (`
   }
 `);
 
-var zoomed = false; // zoom state of a page
+var zoomLevel = 0; // zoom level of a page
 var slideIndex = 1; // which page to display in viewer
 var imageLoaded = false; // toggled when higher DPI images are loaded
 var activeTab; // Slate tab that the images were loaded from
+var activeStudent // student currently being displayed
+var tooltipTimer // for the timer that times out the tooltip after 15 seconds
 
 // creates an overlay that serves as a canvas for all elements created by this userscript
 var overlay = document.createElement('div');
@@ -248,11 +250,12 @@ function overlayOn() {
   var endPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+(?=,)/);
 
   // determines which Slate tab is currently being displayed
+  var targetStudent = document.getElementsByClassName('reader_header_title')[0].innerHTML;
   var targetTab = document.getElementsByClassName('stream active')[0].innerHTML;
 
   if (imageLoaded) {
-	// determines whether the Slate tab in use has changed. If changed, deletes existing HTML elements and creates new ones
-    if(activeTab !== targetTab) {
+	// determines whether the Slate tab or student being displayed has changed. If changed, deletes existing HTML elements and creates new ones
+    if(activeTab !== targetTab || activeStudent !== targetStudent) {
       while (overlay.firstChild) {
 	    // necessary to prevent unused HTML elements from cluttering the page
         overlay.removeChild(overlay.firstChild);
@@ -264,6 +267,7 @@ function overlayOn() {
       slideIndex = parseInt(currentPage, 10);
       showSlides(slideIndex);
       displayTooltip();
+      overlay.scrollTo(0,0); // return to top of the page
       return;
     }
   } else {
@@ -337,7 +341,9 @@ function addElements(imageSrc, startPg, endPg, currPg) {
   slideIndex = parseInt(currPg, 10);
   showSlides(slideIndex);
   imageLoaded = true;
+  zoomLevel = 0;
   activeTab = document.getElementsByClassName('stream active')[0].innerHTML;
+  activeStudent = document.getElementsByClassName('reader_header_title')[0].innerHTML;
 }
 
 // handles keyboard inputs
@@ -350,28 +356,26 @@ function key_handler(event) {
   } else if (event.code == 'Escape') {
     overlayOff();
   }
-  event.stopPropagation(); // without this, pages in Slate Reader will scroll with the zoomed viewer.
+  event.stopPropagation(); // without this, pages in Slate Reader will scroll even with the zoomed viewer displayed.
 }
 
 function overlayOff() {
-  const elements = document.getElementById('image_' + slideIndex);
-  // resets the zoom state of the current page
-  elements.setAttribute('style', 'width:100%');
+  const element = document.getElementById('image_' + slideIndex);
+  // resets the zoom state of the current page displayed
+  element.setAttribute('style', 'width:100%');
+  zoomLevel = 0;
   document.getElementById('overlayUMich').style.display = 'none';
   hideTooltip();
 }
 
 // kind of a janky way to change zoom levels of a document by just changing image's width, could use improvement?
 function toggleZoom() {
-  const elements = document.getElementById('image_' + slideIndex);
+  const element = document.getElementById('image_' + slideIndex);
+  var zLevels = [100, 125, 150];
   hideTooltip();
-  if (zoomed) {
-    elements.setAttribute('style', 'width:100%');
-    zoomed = false;
-  } else {
-    elements.setAttribute('style', 'width:130%');
-    zoomed = true;
-  }
+  zoomLevel++;
+  if (zoomLevel >= zLevels.length) {zoomLevel = 0};
+  element.setAttribute('style', 'width:' + zLevels[zoomLevel] + '%');
 }
 
 // displays tooltip. Should disappear after 10 seconds or upon any input from the user
@@ -381,7 +385,7 @@ function displayTooltip() {
   tooltip.innerHTML = tooltipText;
   document.getElementById('overlayUMich').appendChild(tooltip);
   tooltip.style.display = 'block';
-  // automatically hides tooltip after 10 seconds
+  // automatically hides tooltip after 15 seconds
   setTimeout(function() {if (document.getElementById('tooltipUMich') == null) {return;} else {tooltip.parentNode.removeChild(tooltip)}}, 15000);
   overlay.style.display = 'block';
   overlay.focus();
@@ -404,13 +408,14 @@ const tooltipText =
 // HTML element for the tooltip destroyed after each instance to prevent clutter
 function hideTooltip() {
   var tooltip = document.getElementById('tooltipUMich');
+  clearTimeout(tooltipTimer);
   if (tooltip != null) {
     tooltip.parentNode.removeChild(tooltip);
   }
 }
 
 // needed to reset the timer and prevent the dot from appearing again too soon
-var timeoutHandle = setTimeout(function() {if (document.getElementById('dotContainerUMich') == null) { return;}else{document.getElementById('dotContainerUMich').style.display = 'block'}}, 500);
+var timeoutHandle = setTimeout(function() {if (document.getElementById('dotContainerUMich') == null) {return;}else{document.getElementById('dotContainerUMich').style.display = 'block'}}, 500);
 function hideDots() {
   document.getElementById('dotContainerUMich').style.display = 'none';
   clearTimeout(timeoutHandle);
@@ -420,8 +425,8 @@ function hideDots() {
 // handles switching between pages
 function plusSlides(n) {
   const currImage = document.getElementById('image_' + slideIndex);
-  currImage.setAttribute('style', 'width: 100%');
-  zoomed = false;
+  currImage.setAttribute('style', 'width:100%');
+  zoomLevel = 0;
   showSlides(slideIndex += n);
   overlay.scrollTo(0,0); // return to top of the page
 }
