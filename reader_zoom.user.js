@@ -118,7 +118,7 @@ GM_addStyle (`
     padding: 6px 10px;
     position: fixed;
     top: 5px;
-    left: 5px;
+    right: 25px;
     background-color: rgba(0, 39, 76, .75);
   }
 
@@ -304,10 +304,11 @@ function addElements(imageSrc, startPg, endPg, currPg) {
     slides.className = 'mySlidesUMich';
     document.getElementById('overlayUMich').appendChild(slides);
 
-    // page counter on the upper left corner
+    // page counter on the upper right corner, does not need to be looped?
     var pgCounter = document.createElement('div');
     pgCounter.className = 'numbertextUMich';
     pgCounter.innerHTML = 'Page ' + i + ' of ' + endPg;
+    pgCounter.style.display = 'none';
     document.getElementById('slide_' + i).appendChild(pgCounter);
 
 	// dots that can be used to navigate pages
@@ -386,7 +387,7 @@ function displayTooltip() {
   document.getElementById('overlayUMich').appendChild(tooltip);
   tooltip.style.display = 'block';
   // automatically hides tooltip after 15 seconds
-  setTimeout(function() {if (document.getElementById('tooltipUMich') == null) {return;} else {tooltip.parentNode.removeChild(tooltip)}}, 15000);
+  setTimeout(function() {if (document.getElementById('tooltipUMich') == null) {return;} else {tooltip.parentNode.removeChild(tooltip); }}, 15000);
   overlay.style.display = 'block';
   overlay.focus();
 }
