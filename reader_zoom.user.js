@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Slate Reader Zoom
 // @namespace    https://umich.edu/
-// @version      10.21.19
+// @version      10.31.19
 // @description  For Slate Reader. Opens a page with a highder DPI render of document. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/reader/*
@@ -26,7 +26,7 @@ GM_addStyle (`
     bottom: 0;
     background-color: rgba(0,0,0,0.75);
     z-index: 2;
-    cursor: pointer;
+    cursor: move;
   }
 
   #tooltipUMich {
@@ -35,13 +35,14 @@ GM_addStyle (`
     position: fixed;
     width: 380px;
     height: 370px;
-    top: 2.0%;
+    top: 1.0%;
     right: 1.5%;
     font-size: 15px;
     color: white;
     background-color: rgba(0, 39, 76, .975);
     text-align: justify;
     padding: 16px 30px;
+    cursor: auto;
   }
 
 /*
@@ -61,6 +62,7 @@ GM_addStyle (`
     text-align: center;
     position: fixed;
     left: 50%;
+    margin: 0 25% 0 0;
     bottom: 1.5%;
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
@@ -110,16 +112,38 @@ GM_addStyle (`
 /*
 * page number display
 */
-  .numbertextUMich {
+  #numbertextUMich {
+    text-align: center;
+    border-radius:  10px;
+    border: 1px solid #00274c;
+    color: white;
+    font-size: 15px;
+    width: 100px;
+    padding: 6px 10px;
+    position: fixed;
+    left: 50%;
+    margin: 0 25% 0 0;
+    top: 3%;
+    background-color: rgba(0, 39, 76, .75);
+    cursor: pointer;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
+
+/*
+* name and UMID of the app being displayed
+*/
+  #studentUMich {
     border-radius:  10px;
     border: 1px solid #00274c;
     color: white;
     font-size: 15px;
     padding: 6px 10px;
     position: fixed;
-    top: 5px;
-    right: 25px;
+    top: 1%;
+    left: 5px;
     background-color: rgba(0, 39, 76, .75);
+    cursor: pointer;
   }
 
 /*
@@ -140,7 +164,7 @@ GM_addStyle (`
 /*
 * highlights the correct dot for the page
 */
-  .activeUMich, .dotUMich:hover {
+  .activeUMich, .dotUMich:hover, #studentUMich:hover, #numbertextUMich:hover {
     background-color: rgb(0,39,76);
   }
 
@@ -214,17 +238,19 @@ var zoomLevel = 0; // zoom level of a page
 var slideIndex = 1; // which page to display in viewer
 var imageLoaded = false; // toggled when higher DPI images are loaded
 var activeTab; // Slate tab that the images were loaded from
-var activeStudent // student currently being displayed
-var tooltipTimer // for the timer that times out the tooltip after 15 seconds
+var activeApp // app currently being displayed
+var tooltipTimer; // for the timer that times out the tooltip after 15 seconds
+var pageNumber; // stores the element containing page numbers
 
 // creates an overlay that serves as a canvas for all elements created by this userscript
 var overlay = document.createElement('div');
 overlay.id = 'overlayUMich';
 document.body.appendChild(overlay);
 overlay.addEventListener('keydown', key_handler, true);
-overlay.addEventListener('contextmenu', overlayOff);
-overlay.addEventListener('wheel', hideDots, {passive: false});
+overlay.addEventListener('wheel', hideElements, {passive: false});
 overlay.addEventListener('wheel', hideTooltip, {passive: false});
+overlay.addEventListener('contextmenu', toggleZoom, true);
+overlay.addEventListener('click', toggleZoom, true);
 overlay.className = 'dragscroll'; // enables scrolling by mouse drag
 overlay.tabIndex = -1; // enables keyboard controls by setting focus on the overlay
 
@@ -250,12 +276,12 @@ function overlayOn() {
   var endPage = document.getElementsByClassName('reader_status')[0].childNodes[0].textContent.match(/\d+(?=,)/);
 
   // determines which Slate tab is currently being displayed
-  var targetStudent = document.getElementsByClassName('reader_header_title')[0].innerHTML;
+  var targetApp = document.getElementsByClassName('reader_header_title')[0].innerHTML;
   var targetTab = document.getElementsByClassName('stream active')[0].innerHTML;
 
   if (imageLoaded) {
 	// determines whether the Slate tab or student being displayed has changed. If changed, deletes existing HTML elements and creates new ones
-    if(activeTab !== targetTab || activeStudent !== targetStudent) {
+    if(activeTab !== targetTab || activeApp !== targetApp) {
       while (overlay.firstChild) {
 	    // necessary to prevent unused HTML elements from cluttering the page
         overlay.removeChild(overlay.firstChild);
@@ -263,8 +289,7 @@ function overlayOn() {
       addElements(imageLink, startPage, endPage, currentPage);
       displayTooltip();
     } else {
-      // for whatever reason, parseInt is required to convert the slindeIndex into an integer
-      slideIndex = parseInt(currentPage, 10);
+      slideIndex = parseInt(currentPage, 10); // for whatever reason, parseInt is required to convert the slindeIndex into an integer
       showSlides(slideIndex);
       displayTooltip();
       overlay.scrollTo(0,0); // return to top of the page
@@ -278,6 +303,24 @@ function overlayOn() {
 
 // adds HTML elements needed for the userscript to function
 function addElements(imageSrc, startPg, endPg, currPg) {
+  var iframeUM = document.getElementsByTagName('iframe')[0].contentWindow.document.body; // iframe declared to access student info
+  var table = iframeUM.getElementsByClassName('grey')[0]; // declares table containing UMID
+  var appName = iframeUM.getElementsByClassName('fullname')[0].innerHTML; // student name
+  var appID = table.rows[1].cells[0].innerHTML + " " + table.rows[1].cells[1].innerHTML; // student UMID
+
+  var studentInfo = document.createElement('div');
+  studentInfo.id = 'studentUMich';
+  studentInfo.innerHTML = appName + '<br>' + appID;
+  studentInfo.onclick = overlayOff;
+  document.getElementById('overlayUMich').appendChild(studentInfo);
+
+  // page counter on the upper right corner, does not need to be looped?
+  var pgCounter = document.createElement('div');
+  pgCounter.id = 'numbertextUMich';
+  pgCounter.innerHTML = 'Page ' + currPg + ' of ' + endPg;
+  pgCounter.onclick = overlayOff;
+  document.getElementById('overlayUMich').appendChild(pgCounter);
+
   // creates anchor elements on the edges of the screen for switching between pages
   var forward = document.createElement('a');
   forward.className = 'nextUMich';
@@ -298,18 +341,11 @@ function addElements(imageSrc, startPg, endPg, currPg) {
   document.getElementById('overlayUMich').appendChild(dotContainer);
 
   for (let i = startPg; i <= endPg; i++) {
-    // Contains individual page numbers and the images
+    // Contains the images
     var slides = document.createElement('div');
     slides.id = 'slide_' + i;
     slides.className = 'mySlidesUMich';
     document.getElementById('overlayUMich').appendChild(slides);
-
-    // page counter on the upper right corner, does not need to be looped?
-    var pgCounter = document.createElement('div');
-    pgCounter.className = 'numbertextUMich';
-    pgCounter.innerHTML = 'Page ' + i + ' of ' + endPg;
-    pgCounter.style.display = 'none';
-    document.getElementById('slide_' + i).appendChild(pgCounter);
 
 	// dots that can be used to navigate pages
     var navDots = document.createElement('span');
@@ -332,19 +368,17 @@ function addElements(imageSrc, startPg, endPg, currPg) {
     imageElement.id = 'image_' + i;
     imageElement.src = imageNewSrc;
     imageElement.style.width = '100%';
-    imageElement.onclick = toggleZoom;
 	// if image cannot be loaded due to request DPI being too high, lowers DPI by 10 until loading is succesful
     imageElement.onerror = function() {errorDPI -= 10; this.src = this.src.replace(/z=\d*/, `z=${errorDPI}`)};
     document.getElementById('slide_' + i).appendChild(imageElement);
   }
-
-  // opens the viewer and displays the page currently being displayed in Slate Reader
-  slideIndex = parseInt(currPg, 10);
-  showSlides(slideIndex);
-  imageLoaded = true;
-  zoomLevel = 0;
   activeTab = document.getElementsByClassName('stream active')[0].innerHTML;
-  activeStudent = document.getElementsByClassName('reader_header_title')[0].innerHTML;
+  activeApp = document.getElementsByClassName('reader_header_title')[0].innerHTML;
+  pageNumber = document.getElementById('numbertextUMich');
+  zoomLevel = 0;
+  imageLoaded = true;
+  slideIndex = parseInt(currPg, 10);
+  showSlides(slideIndex); // opens the viewer and displays the page currently being displayed in Slate Reader
 }
 
 // handles keyboard inputs
@@ -370,12 +404,16 @@ function overlayOff() {
 }
 
 // kind of a janky way to change zoom levels of a document by just changing image's width, could use improvement?
-function toggleZoom() {
+function toggleZoom(event) {
   const element = document.getElementById('image_' + slideIndex);
   var zLevels = [100, 125, 150];
   hideTooltip();
-  zoomLevel++;
-  if (zoomLevel >= zLevels.length) {zoomLevel = 0};
+  if(event.type == 'click') {
+    zoomLevel++;
+    if (zoomLevel >= zLevels.length) {zoomLevel = 0};
+  } else if (event.type == 'contextmenu') {
+    if (zoomLevel == 0) {overlayOff()} else {zoomLevel--};
+  }
   element.setAttribute('style', 'width:' + zLevels[zoomLevel] + '%');
 }
 
@@ -387,7 +425,7 @@ function displayTooltip() {
   document.getElementById('overlayUMich').appendChild(tooltip);
   tooltip.style.display = 'block';
   // automatically hides tooltip after 15 seconds
-  setTimeout(function() {if (document.getElementById('tooltipUMich') == null) {return;} else {tooltip.parentNode.removeChild(tooltip); }}, 15000);
+  setTimeout(function() {if (document.getElementById('tooltipUMich') == null) {return;} else {tooltip.parentNode.removeChild(tooltip)}}, 15000);
   overlay.style.display = 'block';
   overlay.focus();
 }
@@ -416,11 +454,27 @@ function hideTooltip() {
 }
 
 // needed to reset the timer and prevent the dot from appearing again too soon
-var timeoutHandle = setTimeout(function() {if (document.getElementById('dotContainerUMich') == null) {return;}else{document.getElementById('dotContainerUMich').style.display = 'block'}}, 500);
-function hideDots() {
+var timeoutHandle = setTimeout(function() {
+  if (document.getElementById('dotContainerUMich') == null) {
+    return;
+  } else {
+    document.getElementById('dotContainerUMich').style.display = 'block';
+    document.getElementById('studentUMich').style.display = 'block';
+    pageNumber.style.display = 'block'
+  }
+}, 500);
+
+function hideElements() {
   document.getElementById('dotContainerUMich').style.display = 'none';
+  document.getElementById('studentUMich').style.display = 'none';
+  pageNumber.style.display = 'none';
   clearTimeout(timeoutHandle);
-  timeoutHandle = setTimeout(function() {if (document.getElementById('dotContainerUMich') == null); document.getElementById('dotContainerUMich').style.display = 'block'}, 500);
+  timeoutHandle = setTimeout(function() {
+    if (document.getElementById('dotContainerUMich') == null);
+      document.getElementById('dotContainerUMich').style.display = 'block';
+      document.getElementById('studentUMich').style.display = 'block';
+      pageNumber.style.display = 'block';
+  }, 500)
 }
 
 // handles switching between pages
@@ -452,6 +506,7 @@ function showSlides(n) {
   }
   slides[slideIndex-1].style.display = 'block';
   dots[slideIndex-1].className += ' activeUMich';
+  pageNumber.innerHTML = pageNumber.innerHTML.replace(/^[^\d]*(\d+)/, 'Page ' + slideIndex);
 }
 
 // literally just copy pasted code from asvd's dragscroll library. Div overlayUMmich is assigned ID of dragscroll
@@ -531,7 +586,7 @@ function showSlides(n) {
           mousemove,
           cont.mm = function(e) {
             if (pushed) {
-              hideDots(); // another addition to original script, hides dots while scrolling
+              hideElements(); // another addition to original script, hides dots while scrolling
               if (!moved &&
                   (Math.abs(e.clientX - startX) > moveThreshold ||
                    Math.abs(e.clientY - startY) > moveThreshold)) {
