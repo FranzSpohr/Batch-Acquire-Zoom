@@ -332,7 +332,7 @@ function addElements(imageSrc, startPg, endPg, currPg) {
   var openTooltip = document.createElement('div');
   openTooltip.id = 'opentooltipUMich';
   openTooltip.innerHTML = '?';
-  openTooltip.onclick = displayTooltip;
+  openTooltip.onmouseover = document.getElementById('tooltipUMich').style.display = 'block';
   document.getElementById('overlayUMich').appendChild(openTooltip);
 
   // page counter on the upper right corner, does not need to be looped?
@@ -446,10 +446,11 @@ function displayTooltip() {
   tooltip.id = 'tooltipUMich';
   tooltip.innerHTML = tooltipText;
   tooltip.style.display = 'block';
+  tooltip.onmouseout = function() {document.getElementById('tooltipUMich').style.display = 'none'};
   document.getElementById('overlayUMich').appendChild(tooltip);
   // automatically hides tooltip after 15 seconds
   clearTimeout(tooltipTimer);
-  tooltipTimer = setTimeout(function() {if (document.getElementById('tooltipUMich') == null) {return;} else {tooltip.parentNode.removeChild(tooltip)}}, 15000);
+  tooltipTimer = setTimeout(function() {if (tooltip.style.display='block') {return;} else {tooltip.style.display = 'none'}}, 15000);
   overlay.style.display = 'block';
   overlay.focus();
 }
@@ -478,8 +479,8 @@ const tooltipText =
 function hideTooltip() {
   var tooltip = document.getElementById('tooltipUMich');
   clearTimeout(tooltipTimer);
-  if (tooltip != null) {
-    tooltip.parentNode.removeChild(tooltip);
+  if (tooltip.style.display != 'none') {
+    tooltip.style.display = 'none';
   }
 }
 
