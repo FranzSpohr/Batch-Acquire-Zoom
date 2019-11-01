@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Slate Reader Zoom
 // @namespace    https://umich.edu/
-// @version      10.31.19
+// @version      11.1.19
 // @description  For Slate Reader. Opens a page with a highder DPI render of document. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/reader/*
@@ -26,7 +26,7 @@ GM_addStyle (`
     bottom: 0;
     background-color: rgba(0,0,0,0.75);
     z-index: 2;
-    cursor: move;
+    cursor: zoom-in;
   }
 
   #tooltipUMich {
@@ -34,7 +34,7 @@ GM_addStyle (`
     border: 2px solid #00274c;
     position: fixed;
     width: 380px;
-    height: 370px;
+    height: 450px;
     top: 1.0%;
     right: 1.5%;
     font-size: 15px;
@@ -53,6 +53,7 @@ GM_addStyle (`
     position: absolute;
     right: 50%;
     height: 25px;
+    margin: 0 0 0 25%;
   }
 
 /*
@@ -245,12 +246,12 @@ var pageNumber; // stores the element containing page numbers
 // creates an overlay that serves as a canvas for all elements created by this userscript
 var overlay = document.createElement('div');
 overlay.id = 'overlayUMich';
+overlay.onclick = function() {toggleZoom('left')};
+overlay.oncontextmenu = function() {toggleZoom('right')};
 document.body.appendChild(overlay);
 overlay.addEventListener('keydown', key_handler, true);
 overlay.addEventListener('wheel', hideElements, {passive: false});
 overlay.addEventListener('wheel', hideTooltip, {passive: false});
-overlay.addEventListener('contextmenu', toggleZoom, true);
-overlay.addEventListener('click', toggleZoom, true);
 overlay.className = 'dragscroll'; // enables scrolling by mouse drag
 overlay.tabIndex = -1; // enables keyboard controls by setting focus on the overlay
 
@@ -404,14 +405,16 @@ function overlayOff() {
 }
 
 // kind of a janky way to change zoom levels of a document by just changing image's width, could use improvement?
-function toggleZoom(event) {
+function toggleZoom(mouseButton) {
   const element = document.getElementById('image_' + slideIndex);
   var zLevels = [100, 125, 150];
   hideTooltip();
-  if(event.type == 'click') {
+  if(mouseButton == 'left') {
     zoomLevel++;
+    overlay.style.cursor = 'zoom-in'
     if (zoomLevel >= zLevels.length) {zoomLevel = 0};
-  } else if (event.type == 'contextmenu') {
+  } else if (mouseButton == 'right') {
+    overlay.style.cursor = 'zoom-in'
     if (zoomLevel == 0) {overlayOff()} else {zoomLevel--};
   }
   element.setAttribute('style', 'width:' + zLevels[zoomLevel] + '%');
@@ -434,14 +437,20 @@ function displayTooltip() {
 const tooltipText =
       "<p>Navigate between pages by<strong><font color='#ffcb05'>&nbsp;left clicking on arrows</font></strong><br>at the edges of the screen.</p>" +
       "<p><strong><font color='#ffcb05'>Left click on the dots&nbsp;</font></strong>near the bottom of the screen<br>to jump between pages.</p>" +
-      "<table id='tableUMich'><tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Esc Key:</td><td class='cellNavUMich'>Return to reader</td></tr>" +
-      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Right Click:</td><td class='cellNavUMich'>Return to reader</td></tr><tr class='cellBlankUMich'><td colspan='3'></td></tr>" +
+      "<table id='tableUMich'>" +
+      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Left Click:</td><td class='cellNavUMich'>Zoom in</td></tr>" +
+      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Left Click &<br> Mouse Drag:</td><td class='cellNavUMich'>Scroll document</td></tr>" +
+      "<tr class='cellBlankUMich'><td colspan='3'></td></tr>" +
+      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Right Click:</td><td class='cellNavUMich'>Zoom out</td></tr>" +
+      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Right Click:<br><font size='1'>(if on default zoom level)</font></td><td class='cellNavUMich'>Return to Reader</td></tr>" +
+      "<tr class='cellBlankUMich'><td colspan='3'></td></tr>" +
       "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Up Arrow Key:</td><td class='cellNavUMich'>Scroll up</td></tr>" +
       "<tr></tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Down Arrow Key:</td><td class='cellNavUMich'>Scroll down</td></tr>" +
       "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Left Arrow Key:</td><td class='cellNavUMich'>Previous page</td></tr>" +
-      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Right Arrow Key:</td><td class='cellNavUMich'>Next page</td></tr><tr class='cellBlankUMich'><td colspan='3'></td></tr>" +
-      "<tr></tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Left Click:</td><td class='cellNavUMich'>Toggle between zoom levels</td></tr>" +
-      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Left Click &<br> Mouse Drag:</td><td class='cellNavUMich'>Scroll document</td></tr></table>" +
+      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Right Arrow Key:</td><td class='cellNavUMich'>Next page</td></tr>" +
+      "<tr class='cellBlankUMich'><td colspan='3'></td></tr>" +
+      "<tr></tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Esc Key:</td><td class='cellNavUMich'>Return to Reader</td></tr>" +
+      "</table>" +
       "<p>If you encounter issues or have any suggestions or<br>requests, contact Teddy Ma at <a style='color: #ffcb05' href='mailto:tedma@umich.edu'>tedma@umich.edu</a>.</b></p>"
 
 // HTML element for the tooltip destroyed after each instance to prevent clutter
@@ -531,7 +540,6 @@ function showSlides(n) {
   var removeEventListener = 'remove'+EventListener;
   var newScrollX, newScrollY;
   var moveThreshold = 4;
-
   var dragged = [];
   var reset = function(i, el) {
     for (i = 0; i < dragged.length;) {
