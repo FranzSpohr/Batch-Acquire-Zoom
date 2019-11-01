@@ -31,7 +31,7 @@ GM_addStyle (`
 
   #tooltipUMich {
     border-radius: 25px;
-    border: 2px solid #00274c;
+    border: 2px solid rgba(0, 39, 76, .975);
     position: fixed;
     width: 380px;
     height: 450px;
@@ -43,6 +43,20 @@ GM_addStyle (`
     text-align: justify;
     padding: 16px 30px;
     cursor: auto;
+  }
+
+ #opentooltipUMich {
+    border-radius:  10px;
+    border: 1px solid rgba(0, 39, 76, .75);
+    color: white;
+    font-size: 15px;
+    padding: 6px 10px;
+    position: fixed;
+    top: 1%;
+    right: 3.5%;
+    background-color: rgba(0, 39, 76, .75);
+    font-weight: bold;
+    cursor: pointer;
   }
 
 /*
@@ -116,7 +130,7 @@ GM_addStyle (`
   #numbertextUMich {
     text-align: center;
     border-radius:  10px;
-    border: 1px solid #00274c;
+    border: 1px solid rgba(0, 39, 76, .75);
     color: white;
     font-size: 15px;
     width: 100px;
@@ -136,7 +150,7 @@ GM_addStyle (`
 */
   #studentUMich {
     border-radius:  10px;
-    border: 1px solid #00274c;
+    border: 1px solid rgba(0, 39, 76, .75);
     color: white;
     font-size: 15px;
     padding: 6px 10px;
@@ -165,7 +179,7 @@ GM_addStyle (`
 /*
 * highlights the correct dot for the page
 */
-  .activeUMich, .dotUMich:hover, #studentUMich:hover, #numbertextUMich:hover {
+  .activeUMich, .dotUMich:hover, #studentUMich:hover, #numbertextUMich:hover, #opentooltipUMich:hover {
     background-color: rgb(0,39,76);
   }
 
@@ -315,6 +329,12 @@ function addElements(imageSrc, startPg, endPg, currPg) {
   studentInfo.onclick = overlayOff;
   document.getElementById('overlayUMich').appendChild(studentInfo);
 
+  var openTooltip = document.createElement('div');
+  openTooltip.id = 'opentooltipUMich';
+  openTooltip.innerHTML = '?';
+  openTooltip.onclick = displayTooltip;
+  document.getElementById('overlayUMich').appendChild(openTooltip);
+
   // page counter on the upper right corner, does not need to be looped?
   var pgCounter = document.createElement('div');
   pgCounter.id = 'numbertextUMich';
@@ -425,10 +445,11 @@ function displayTooltip() {
   var tooltip = document.createElement('div');
   tooltip.id = 'tooltipUMich';
   tooltip.innerHTML = tooltipText;
-  document.getElementById('overlayUMich').appendChild(tooltip);
   tooltip.style.display = 'block';
+  document.getElementById('overlayUMich').appendChild(tooltip);
   // automatically hides tooltip after 15 seconds
-  setTimeout(function() {if (document.getElementById('tooltipUMich') == null) {return;} else {tooltip.parentNode.removeChild(tooltip)}}, 15000);
+  clearTimeout(tooltipTimer);
+  tooltipTimer = setTimeout(function() {if (document.getElementById('tooltipUMich') == null) {return;} else {tooltip.parentNode.removeChild(tooltip)}}, 15000);
   overlay.style.display = 'block';
   overlay.focus();
 }
@@ -438,6 +459,8 @@ const tooltipText =
       "<p>Navigate between pages by<strong><font color='#ffcb05'>&nbsp;left clicking on arrows</font></strong><br>at the edges of the screen.</p>" +
       "<p><strong><font color='#ffcb05'>Left click on the dots&nbsp;</font></strong>near the bottom of the screen<br>to jump between pages.</p>" +
       "<table id='tableUMich'>" +
+      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Esc Key:</td><td class='cellNavUMich'>Return to Reader</td></tr>" +
+      "<tr class='cellBlankUMich'><td colspan='3'></td></tr>" +
       "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Left Click:</td><td class='cellNavUMich'>Zoom in</td></tr>" +
       "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Left Click &<br> Mouse Drag:</td><td class='cellNavUMich'>Scroll document</td></tr>" +
       "<tr class='cellBlankUMich'><td colspan='3'></td></tr>" +
@@ -448,8 +471,6 @@ const tooltipText =
       "<tr></tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Down Arrow Key:</td><td class='cellNavUMich'>Scroll down</td></tr>" +
       "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Left Arrow Key:</td><td class='cellNavUMich'>Previous page</td></tr>" +
       "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Right Arrow Key:</td><td class='cellNavUMich'>Next page</td></tr>" +
-      "<tr class='cellBlankUMich'><td colspan='3'></td></tr>" +
-      "<tr></tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Esc Key:</td><td class='cellNavUMich'>Return to Reader</td></tr>" +
       "</table>" +
       "<p>If you encounter issues or have any suggestions or<br>requests, contact Teddy Ma at <a style='color: #ffcb05' href='mailto:tedma@umich.edu'>tedma@umich.edu</a>.</b></p>"
 
