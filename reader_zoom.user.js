@@ -260,7 +260,7 @@ var pageNumber; // stores the element containing page numbers
 // creates an overlay that serves as a canvas for all elements created by this userscript
 var overlay = document.createElement('div');
 overlay.id = 'overlayUMich';
-overlay.onclick = function() {toggleZoom('left')};
+overlay.ondblclick = function() {toggleZoom('left')};
 overlay.oncontextmenu = function() {toggleZoom('right')};
 document.body.appendChild(overlay);
 overlay.addEventListener('keydown', key_handler, true);
@@ -461,7 +461,7 @@ const tooltipText =
       "<table id='tableUMich'>" +
       "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Esc Key:</td><td class='cellNavUMich'>Return to Reader</td></tr>" +
       "<tr class='cellBlankUMich'><td colspan='3'></td></tr>" +
-      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Left Click:</td><td class='cellNavUMich'>Zoom in</td></tr>" +
+      "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Double Left Click:</td><td class='cellNavUMich'>Zoom in</td></tr>" +
       "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Left Click &<br> Mouse Drag:</td><td class='cellNavUMich'>Scroll document</td></tr>" +
       "<tr class='cellBlankUMich'><td colspan='3'></td></tr>" +
       "<tr><td style='width:20px'><li></li></td><td class='cellKeyUMich'>Right Click:</td><td class='cellNavUMich'>Zoom out</td></tr>" +
