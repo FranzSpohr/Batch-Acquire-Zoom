@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Batch Acquire Zoom
 // @namespace    https://umich.edu/
-// @version      10.21.19
+// @version      11.7.19
 // @description  For Slate Batch Acquire. Needs Tampermonkey for Chrome or Greasemonkey for Firefox. See readme for more info.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/database/acquire
@@ -18,8 +18,20 @@ var ListenerAdded = false
 // "z" value that Slate requires to determine size of the document render
 var zoom_Levels = [72, 108, 144, 180, 216];
 
-window.addEventListener('keydown', Toggle_Zoom, true);
-window.addEventListener('click', Add_Listener, true);
+
+const parentElement = window.document;
+const mutationConfig = { attributes: true, childList: true, subtree: true, characterData: true, characterDataOldValue: true };
+
+var onMutate = function() {
+  if (document.getElementById('batch_pages') !== null) {
+    var docWindow = document.getElementById('batch_pages');
+    docWindow.addEventListener('keydown', Toggle_Zoom, true);
+    docWindow.addEventListener('load', add_Listener, true);
+  }
+};
+
+var observer = new MutationObserver(onMutate);
+observer.observe(window.document, mutationConfig);
 
 // toggles between zoom levels
 function Toggle_Zoom(event) {
@@ -53,7 +65,7 @@ function Toggle_Zoom(event) {
 }
 
 // adds event listeners needed for userscript to function
-function Add_Listener () {
+function add_Listener () {
   if (ListenerAdded) {
     return;
   } else {
