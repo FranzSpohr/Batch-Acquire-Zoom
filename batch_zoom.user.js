@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Batch Acquire Zoom
 // @namespace    https://umich.edu/
-// @version      11.19.19
+// @version      11.20.19
 // @description  For Slate Batch Acquire. Needs Tampermonkey for Chrome or Greasemonkey for Firefox. See readme for more info.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/database/acquire
