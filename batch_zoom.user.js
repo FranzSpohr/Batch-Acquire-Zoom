@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Batch Acquire Zoom
 // @namespace    https://umich.edu/
-// @version      11.18.19
+// @version      11.19.19
 // @description  For Slate Batch Acquire. Needs Tampermonkey for Chrome or Greasemonkey for Firefox. See readme for more info.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/database/acquire
@@ -34,7 +34,7 @@ var onMutate = () => {
 var observer = new MutationObserver(onMutate);
 observer.observe(parentElement.body, mutationConfig);
 
-parentElement.addEventListener('keypress', Toggle_Zoom, true)
+parentElement.addEventListener('keypress', batchZoom, true);
 
 // adds event listeners needed for userscript to function
 function add_Listener() {
@@ -44,34 +44,35 @@ function add_Listener() {
     // grabs images and attaches listeners
     const elements = document.querySelectorAll('.batch_page_container > img');
     elements.forEach(el => {
-      el.addEventListener('click', Toggle_Zoom, true)
-      el.addEventListener('contextmenu', Toggle_Zoom, true)
+      el.addEventListener('click', batchZoom, true);
+      el.addEventListener('contextmenu', batchZoom, true)
     });
     // needed to determine whether "next" buttons, etc. are pressed, meaning listeners have to be attached again
     const buttons = document.querySelectorAll('button[type="button"]');
     buttons.forEach(el => {
       el.addEventListener('click', () => {
-        zoomCount = 0
+        zoomCount = 0;
         ListenerAdded = false
-      })
+      });
     });
     ListenerAdded = true
-  }
-}
+  };
+};
 
 // toggles between zoom levels
-function Toggle_Zoom(event) {
+function batchZoom(event) {
   if (parentElement.activeElement.nodeName == 'INPUT') {
-    return
+    return;
   } else {
     if (event.code == 'NumpadAdd' || event.code == 'Equal' || event.type == 'click') {
-      //event.preventDefault();
+      event.preventDefault();
       if (zoomCount == 4) {
         hideZoomer();
-        return;
-      }
+        return
+      };
       // selects image elements loaded by batch acquire
       const elements = document.querySelectorAll('.batch_page_container > img');
+
       // replaces the existing "z" value in the URL of documents
       elements.forEach(el => {
         if (el.src.includes(`z=${zoom_Levels[zoomCount]}`)) {
@@ -94,7 +95,7 @@ function Toggle_Zoom(event) {
       zoomCount--;
     }
   }
-}
+};
 
 /* kinda janky way to automatically close Slate's useless magnifying glass thingy*/
 function hideZoomer() {
@@ -102,4 +103,4 @@ function hideZoomer() {
   if (targetNode) {
     targetNode.parentNode.removeChild(targetNode)
   }
-}
+};
