@@ -463,6 +463,7 @@ function overlayOff() {
   zoomLevel = 0;
   document.getElementById('overlayUMich').style.display = 'none';
   hideTooltip();
+  document.exitFullscreen();
 }
 
 // kind of a janky way to change zoom levels of a document by just changing image's width, could use improvement?
@@ -505,6 +506,7 @@ function displayTooltip() {
   }, 15000);
   overlay.style.display = 'block';
   overlay.focus();
+  document.documentElement.requestFullscreen();
 }
 
 // texts for tooltip
