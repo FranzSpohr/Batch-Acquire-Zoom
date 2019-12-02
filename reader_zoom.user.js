@@ -2,7 +2,7 @@
 // @name         Slate Reader Zoom
 // @namespace    https://umich.edu/
 // @version      11.13.19
-// @description  For Slate Reader. Opens a page with a highder DPI render of document. Needs Tampermonkey for Chrome or Greasemonkey for Firefox.
+// @description  For Slate Reader. Opens a page with a higher DPI render of document. Needs latest stable Chrome and Tampermonkey extension.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/reader/*
 // @updateURL    //https://github.com/FranzSpohr/Slate_Tools/blob/master/reader_zoom.user.js
