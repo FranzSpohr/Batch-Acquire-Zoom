@@ -44,8 +44,7 @@ GM_addStyle(`
     padding: 16px 30px;
     cursor: auto;
   }
-
- #opentooltipUMich {
+  #opentooltipUMich {
     border-radius:  10px;
     border: 1px solid rgba(0, 39, 76, .75);
     color: white;
@@ -204,7 +203,7 @@ GM_addStyle(`
     margin-left: inherit;
     -webkit-transform: translate(-50%, 0%);
     transform: translate(-50%, 0%);
-   }
+  }
 
   .dotUMich .dotHoverUMich:after {
     content: " ";
@@ -366,11 +365,12 @@ function addElements(imageSrc, startPg, endPg, currPg) {
   openTooltip.onclick = displayTooltip;
   document.getElementById('overlayUMich').appendChild(openTooltip);
 
-  // page counter on the upper right corner, does not need to be looped?
+  // page counter on the upper right corner.
   var pgCounter = document.createElement('div');
   pgCounter.id = 'numbertextUMich';
   pgCounter.innerHTML = 'Page ' + currPg + ' of ' + endPg;
   pgCounter.onclick = overlayOff;
+  pgCounter.title = 'Click to Return to Slate Reader';
   document.getElementById('overlayUMich').appendChild(pgCounter);
 
   // creates anchor elements on the edges of the screen for switching between pages
