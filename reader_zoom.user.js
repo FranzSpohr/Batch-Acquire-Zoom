@@ -345,6 +345,8 @@ function overlayOn() {
   }
 }
 
+const newOverlay = document.getElementById('overlayUMich');
+
 // adds HTML elements needed for the userscript to function
 function addElements(imageSrc, startPg, endPg, currPg) {
   const iframeUM = document.getElementsByTagName('iframe')[0].contentWindow
@@ -353,8 +355,6 @@ function addElements(imageSrc, startPg, endPg, currPg) {
   const appName = iframeUM.getElementsByClassName('fullname')[0].innerHTML; // student name
   const appID =
     table.rows[1].cells[0].innerHTML + ' ' + table.rows[1].cells[1].innerHTML; // student UMID
-
-  const newOverlay = document.getElementById('overlayUMich');
 
   const studentInfo = document.createElement('div');
   studentInfo.id = 'studentUMich';
