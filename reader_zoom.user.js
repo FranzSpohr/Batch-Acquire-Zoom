@@ -421,7 +421,8 @@ function addElements(imageSrc, startPg, endPg, currPg) {
     navDots.appendChild(dotHover);
 
     const imageElement = document.createElement('img'); // element for higher DPI images of the documents
-    const imageNewSrc = imageSrc.src.replace(/z=\d*/, 'z=300'); // replaces the part of URL that specifies DPI of the image
+
+    let imageNewSrc = imageSrc.src.replace(/z=\d*/, 'z=300'); // replaces the part of URL that specifies DPI of the image
 
     let errorDPI = 200; // lowers requested DPI if image fails to be loaded
 
