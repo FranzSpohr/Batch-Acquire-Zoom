@@ -431,7 +431,7 @@ function addElements(imageSrc, startPg, endPg, currPg) {
     imageElement.id = 'image_' + i;
     imageElement.src = imageNewSrc;
     imageElement.style.width = '100%';
-    // if image cannot be loaded due to request DPI being too high, lowers DPI by 10 until loading is succesful
+    // if image cannot be loaded due to request DPI being too high, lowers DPI by 10 until loading is successful
     imageElement.onerror = function() {
       errorDPI -= 10;
       this.src = this.src.replace(/z=\d*/, `z=${errorDPI}`);
@@ -581,7 +581,7 @@ function currentSlide(n) {
   showSlides((slideIndex = n));
 }
 
-// adopted from slideshow turorial in W3C
+// adopted from slideshow tutorial in W3C
 function showSlides(n) {
   let i;
   const slides = document.getElementsByClassName('mySlidesUMich');
@@ -606,7 +606,7 @@ function showSlides(n) {
   );
 }
 
-// literally just copy pasted code from asvd's dragscroll library. Div overlayUMmich is assigned ID of dragscroll
+// literally just copy pasted code from asvd's dragscroll library. Div overlayUmich is assigned ID of dragscroll
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     define(['exports'], factory);
