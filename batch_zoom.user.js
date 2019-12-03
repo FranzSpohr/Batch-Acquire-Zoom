@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Batch Acquire Zoom
 // @namespace    https://umich.edu/
-// @version      11.20.19
-// @description  For Slate Batch Acquire. Needs Tampermonkey for Chrome or Greasemonkey for Firefox. See readme for more info.
+// @version      12.2.19
+// @description  For Slate Batch Acquire. Requires latest stable Chrome release and Tampermonkey extension.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/database/acquire
 // @match        https://*/manage/lookup/*
@@ -11,9 +11,9 @@
 // @grant        none
 // ==/UserScript==
 
-var zoomCount = 0; // stores current zoom level
-var ListenerAdded = false; // stores whether event listeners were added
-var zoom_Levels = [72, 108, 144, 180, 216]; // "z" value that Slate requires to determine size of the document render
+let zoomCount = 0; // stores current zoom level
+let ListenerAdded = false; // stores whether event listeners were added
+const zoom_Levels = [72, 108, 144, 180, 216]; // "z" value that Slate requires to determine size of the document render
 
 const parentElement = window.document;
 const mutationConfig = {
@@ -21,20 +21,20 @@ const mutationConfig = {
   childList: true,
   subtree: true,
   characterData: true,
-  characterDataOldValue: true
+  characterDataOldValue: true,
 };
 
-var onMutate = () => {
+const onMutate = () => {
   if (
     document.getElementById('batch_pages') !== null &&
     ListenerAdded == false
   ) {
-    var docWindow = document.getElementById('batch_pages');
+    const docWindow = document.getElementById('batch_pages');
     docWindow.addEventListener('load', add_Listener, true);
   }
 };
 
-var observer = new MutationObserver(onMutate);
+const observer = new MutationObserver(onMutate);
 observer.observe(parentElement.body, mutationConfig);
 
 parentElement.addEventListener('keypress', batchZoom, true);
@@ -116,7 +116,9 @@ function batchZoom(event) {
 
 /* kinda janky way to automatically close Slate's useless magnifying glass thingy*/
 function hideZoomer() {
-  var targetNode = document.getElementsByClassName('batch_zoomer boxshadow')[0];
+  const targetNode = document.getElementsByClassName(
+    'batch_zoomer boxshadow'
+  )[0];
   if (targetNode) {
     targetNode.parentNode.removeChild(targetNode);
   }
