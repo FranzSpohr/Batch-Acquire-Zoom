@@ -266,16 +266,16 @@ GM_addStyle(`
   }
 `);
 
-var zoomLevel = 0; // zoom level of a page
-var slideIndex = 1; // which page to display in viewer
-var imageLoaded = false; // toggled when higher DPI images are loaded
-var activeTab; // Slate tab that the images were loaded from
-var activeApp; // app currently being displayed
-var tooltipTimer; // for the timer that times out the tooltip after 15 seconds
-var pageNumber; // stores the element containing page numbers
+let zoomLevel = 0; // zoom level of a page
+let slideIndex = 1; // which page to display in viewer
+let imageLoaded = false; // toggled when higher DPI images are loaded
+let activeTab; // Slate tab that the images were loaded from
+let activeApp; // app currently being displayed
+let tooltipTimer; // for the timer that times out the tooltip after 15 seconds
+let pageNumber; // stores the element containing page numbers
 
 // creates an overlay that serves as a canvas for all elements created by this userscript
-var overlay = document.createElement('div');
+const overlay = document.createElement('div');
 overlay.id = 'overlayUMich';
 overlay.ondblclick = function() {
   toggleZoom('left');
@@ -291,7 +291,7 @@ overlay.className = 'dragscroll'; // enables scrolling by mouse drag
 overlay.tabIndex = -1; // enables keyboard controls by setting focus on the overlay
 
 // injects button into the footer of Slate Reader. clicking it will open the viewer.
-var input = document.createElement('input');
+const input = document.createElement('input');
 input.type = 'button';
 input.id = 'buttonUMich';
 input.value = 'Display Larger Images';
@@ -309,18 +309,19 @@ function overlayOn() {
     return;
   }
   // uses regular expressions to extract data needed to determine the number of needed new HTML elements
-  var startPage = 1;
-  var currentPage = document
+  let startPage = 1;
+  const currentPage = document
     .getElementsByClassName('reader_status')[0]
     .childNodes[0].textContent.match(/\d+/);
-  var endPage = document
+  const endPage = document
     .getElementsByClassName('reader_status')[0]
     .childNodes[0].textContent.match(/\d+(?=,)/);
 
   // determines which Slate tab is currently being displayed
-  var targetApp = document.getElementsByClassName('reader_header_title')[0]
+  const targetApp = document.getElementsByClassName('reader_header_title')[0]
     .innerHTML;
-  var targetTab = document.getElementsByClassName('stream active')[0].innerHTML;
+  const targetTab = document.getElementsByClassName('stream active')[0]
+    .innerHTML;
 
   if (imageLoaded) {
     // determines whether the Slate tab or student being displayed has changed. If changed, deletes existing HTML elements and creates new ones
@@ -346,65 +347,67 @@ function overlayOn() {
 
 // adds HTML elements needed for the userscript to function
 function addElements(imageSrc, startPg, endPg, currPg) {
-  var iframeUM = document.getElementsByTagName('iframe')[0].contentWindow
+  const iframeUM = document.getElementsByTagName('iframe')[0].contentWindow
     .document.body; // iframe declared to access student info
-  var table = iframeUM.getElementsByClassName('grey')[0]; // declares table containing UMID
-  var appName = iframeUM.getElementsByClassName('fullname')[0].innerHTML; // student name
-  var appID =
+  const table = iframeUM.getElementsByClassName('grey')[0]; // declares table containing UMID
+  const appName = iframeUM.getElementsByClassName('fullname')[0].innerHTML; // student name
+  const appID =
     table.rows[1].cells[0].innerHTML + ' ' + table.rows[1].cells[1].innerHTML; // student UMID
 
-  var studentInfo = document.createElement('div');
+  const newOverlay = document.getElementById('overlayUMich');
+
+  const studentInfo = document.createElement('div');
   studentInfo.id = 'studentUMich';
   studentInfo.innerHTML = appName + '<br>' + appID;
   studentInfo.onclick = overlayOff;
-  document.getElementById('overlayUMich').appendChild(studentInfo);
+  newOverlay.appendChild(studentInfo);
 
-  var openTooltip = document.createElement('div');
+  const openTooltip = document.createElement('div');
   openTooltip.id = 'opentooltipUMich';
   openTooltip.innerHTML = '?';
   openTooltip.onclick = displayTooltip;
-  document.getElementById('overlayUMich').appendChild(openTooltip);
+  newOverlay.appendChild(openTooltip);
 
   // page counter on the upper right corner.
-  var pgCounter = document.createElement('div');
+  const pgCounter = document.createElement('div');
   pgCounter.id = 'numbertextUMich';
   pgCounter.innerHTML = 'Page ' + currPg + ' of ' + endPg;
   pgCounter.onclick = overlayOff;
   pgCounter.title = 'Click to Return to Slate Reader';
-  document.getElementById('overlayUMich').appendChild(pgCounter);
+  newOverlay.appendChild(pgCounter);
 
   // creates anchor elements on the edges of the screen for switching between pages
-  var forward = document.createElement('a');
+  const forward = document.createElement('a');
   forward.className = 'nextUMich';
   forward.onclick = function() {
     plusSlides(1);
   };
   forward.innerHTML = '&#10095';
-  document.getElementById('overlayUMich').appendChild(forward);
+  newOverlay.appendChild(forward);
 
   // creates anchor elements on the edges of the screen for switching between pages
-  var backward = document.createElement('a');
+  const backward = document.createElement('a');
   backward.className = 'prevUMich';
   backward.onclick = function() {
     plusSlides(-1);
   };
   backward.innerHTML = '&#10094';
-  document.getElementById('overlayUMich').appendChild(backward);
+  newOverlay.appendChild(backward);
 
   // container for the navigation dots
-  var dotContainer = document.createElement('div');
+  const dotContainer = document.createElement('div');
   dotContainer.id = 'dotContainerUMich';
-  document.getElementById('overlayUMich').appendChild(dotContainer);
+  newOverlay.appendChild(dotContainer);
 
   for (let i = startPg; i <= endPg; i++) {
     // Contains the images
-    var slides = document.createElement('div');
+    const slides = document.createElement('div');
     slides.id = 'slide_' + i;
     slides.className = 'mySlidesUMich';
-    document.getElementById('overlayUMich').appendChild(slides);
+    newOverlay.appendChild(slides);
 
     // dots that can be used to navigate pages
-    var navDots = document.createElement('span');
+    const navDots = document.createElement('span');
     navDots.className = 'dotUMich';
     navDots.onclick = function() {
       currentSlide(i);
@@ -412,14 +415,15 @@ function addElements(imageSrc, startPg, endPg, currPg) {
     dotContainer.appendChild(navDots);
 
     // displays page info above dots
-    var dotHover = document.createElement('span');
+    const dotHover = document.createElement('span');
     dotHover.className = 'dotHoverUMich';
     dotHover.innerHTML = 'Page ' + i;
     navDots.appendChild(dotHover);
 
-    var imageElement = document.createElement('img'); // element for higher DPI images of the documents
-    var imageNewSrc = imageSrc.src.replace(/z=\d*/, 'z=300'); // replaces the part of URL that specifies DPI of the image
-    var errorDPI = 200; // lowers requested DPI if image fails to be loaded
+    const imageElement = document.createElement('img'); // element for higher DPI images of the documents
+    const imageNewSrc = imageSrc.src.replace(/z=\d*/, 'z=300'); // replaces the part of URL that specifies DPI of the image
+
+    let errorDPI = 200; // lowers requested DPI if image fails to be loaded
 
     // modifies the page number component of the URL to attach correct pages to the slides
     imageNewSrc = imageNewSrc.replace(/pg=\d*/, `pg=${i - 1}`);
@@ -461,7 +465,7 @@ function overlayOff() {
   // resets the zoom state of the current page displayed
   element.setAttribute('style', 'width:100%');
   zoomLevel = 0;
-  document.getElementById('overlayUMich').style.display = 'none';
+  newOverlay.style.display = 'none';
   hideTooltip();
   document.exitFullscreen();
 }
@@ -469,7 +473,7 @@ function overlayOff() {
 // kind of a janky way to change zoom levels of a document by just changing image's width, could use improvement?
 function toggleZoom(mouseButton) {
   const element = document.getElementById('image_' + slideIndex);
-  var zLevels = [100, 125, 150];
+  const zLevels = [100, 125, 150];
   hideTooltip();
   if (mouseButton == 'left') {
     zoomLevel++;
@@ -490,11 +494,11 @@ function toggleZoom(mouseButton) {
 
 // displays tooltip. Should disappear after 10 seconds or upon any input from the user
 function displayTooltip() {
-  var tooltip = document.createElement('div');
+  const tooltip = document.createElement('div');
   tooltip.id = 'tooltipUMich';
   tooltip.innerHTML = tooltipText;
   tooltip.style.display = 'block';
-  document.getElementById('overlayUMich').appendChild(tooltip);
+  newOverlay.appendChild(tooltip);
   // automatically hides tooltip after 15 seconds
   clearTimeout(tooltipTimer);
   tooltipTimer = setTimeout(function() {
@@ -531,7 +535,7 @@ const tooltipText =
 
 // HTML element for the tooltip destroyed after each instance to prevent clutter
 function hideTooltip() {
-  var tooltip = document.getElementById('tooltipUMich');
+  const tooltip = document.getElementById('tooltipUMich');
   clearTimeout(tooltipTimer);
   if (tooltip != null) {
     tooltip.parentNode.removeChild(tooltip);
@@ -539,7 +543,7 @@ function hideTooltip() {
 }
 
 // needed to reset the timer and prevent the dot from appearing again too soon
-var timeoutHandle = setTimeout(function() {
+let timeoutHandle = setTimeout(function() {
   if (document.getElementById('dotContainerUMich') == null) {
     return;
   } else {
@@ -578,9 +582,9 @@ function currentSlide(n) {
 
 // adopted from slideshow turorial in W3C
 function showSlides(n) {
-  var i;
-  var slides = document.getElementsByClassName('mySlidesUMich');
-  var dots = document.getElementsByClassName('dotUMich');
+  let i;
+  const slides = document.getElementsByClassName('mySlidesUMich');
+  const dots = document.getElementsByClassName('dotUMich');
   if (n > slides.length) {
     slideIndex = 1;
   }
