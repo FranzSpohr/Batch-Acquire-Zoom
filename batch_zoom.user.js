@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Batch Acquire Zoom
 // @namespace    https://umich.edu/
-// @version      13.7.22
+// @version      2022.04.07
 // @description  For Slate Batch Acquire. Requires latest stable Chrome release and Tampermonkey extension.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/database/acquire
