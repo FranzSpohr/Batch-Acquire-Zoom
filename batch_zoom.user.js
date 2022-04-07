@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         Batch Acquire Zoom
 // @namespace    https://umich.edu/
-// @version      12.2.19
+// @version      13.7.22
 // @description  For Slate Batch Acquire. Requires latest stable Chrome release and Tampermonkey extension.
 // @author       University of Michigan OUA Processing (Theodore Ma)
 // @match        https://*/manage/database/acquire
 // @match        https://*/manage/lookup/*
 // @match        https://*/manage/inbox/*
+// @downloadURL  https://github.com/FranzSpohr/Slate_Tools/blob/master/batch_zoom.user.js
 // @updateURL    https://github.com/FranzSpohr/Slate_Tools/blob/master/batch_zoom.user.js
 // @grant        none
 // ==/UserScript==
@@ -37,6 +38,7 @@ const onMutate = () => {
 const observer = new MutationObserver(onMutate);
 observer.observe(parentElement.body, mutationConfig);
 
+parentElement.addEventListener('DOMNodeInserted', hideZoomer, true)
 parentElement.addEventListener('keypress', batchZoom, true);
 
 // adds event listeners needed for userscript to function
@@ -44,15 +46,17 @@ function add_Listener() {
   if (ListenerAdded) {
     return;
   } else {
-    // grabs images and attaches listeners
+    // grabs image elements
     const elements = document.querySelectorAll('.batch_page_container > img');
-    elements.forEach(el => {
-      el.addEventListener('click', batchZoom, true);
+    // and attaches unique listeners to each image elements
+    elements.forEach((el) => {
+      //el.addEventListener('click', batchZoom, true);
       el.addEventListener('contextmenu', batchZoom, true);
+      el.addEventListener('mousedown', batchZoom, true);
     });
-    // needed to determine whether "next" buttons, etc. are pressed, meaning listeners have to be attached again
+    // needed to detect when "next" buttons, etc. are pressed to reattach listeners to the new images
     const buttons = document.querySelectorAll('button[type="button"]');
-    buttons.forEach(el => {
+    buttons.forEach((el) => {
       el.addEventListener('click', () => {
         zoomCount = 0;
         ListenerAdded = false;
@@ -68,20 +72,40 @@ function batchZoom(event) {
     return;
   } else {
     if (
+      event.ctrlKey
+    ) {
+      return;
+    } else if (
+      event.button == 1 || event.which == 2
+    ) {
+      event.preventDefault();
+      if (zoomCount == 0) {
+        return;
+      }
+      const elements = document.querySelectorAll('.batch_page_container > img');
+      elements.forEach((el) => {
+        if (el.src.includes(`z=${zoom_Levels[zoomCount]}`)) {
+          el.src = el.src.replace(
+            `z=${zoom_Levels[zoomCount]}`,
+            `z=${zoom_Levels[0]}`
+          );
+        }
+      });
+      zoomCount = 0;
+      //console.log('Zoom Clear');
+    } else if (
       event.code == 'NumpadAdd' ||
       event.code == 'Equal' ||
-      event.type == 'click'
+      event.button == 0 || event.which == 1
     ) {
       event.preventDefault();
       if (zoomCount == 4) {
-        hideZoomer();
         return;
       }
       // selects image elements loaded by batch acquire
       const elements = document.querySelectorAll('.batch_page_container > img');
-
       // replaces the existing "z" value in the URL of documents
-      elements.forEach(el => {
+      elements.forEach((el) => {
         if (el.src.includes(`z=${zoom_Levels[zoomCount]}`)) {
           el.src = el.src.replace(
             `z=${zoom_Levels[zoomCount]}`,
@@ -90,18 +114,19 @@ function batchZoom(event) {
         }
       });
       zoomCount++;
-      hideZoomer();
+      //console.log('Zoom In');
     } else if (
       event.code == 'NumpadSubtract' ||
       event.code == 'Minus' ||
       event.type == 'contextmenu'
     ) {
       event.preventDefault();
+      event.stopImmediatePropagation()
       if (zoomCount == 0) {
         return;
       }
       const elements = document.querySelectorAll('.batch_page_container > img');
-      elements.forEach(el => {
+      elements.forEach((el) => {
         if (el.src.includes(`z=${zoom_Levels[zoomCount]}`)) {
           el.src = el.src.replace(
             `z=${zoom_Levels[zoomCount]}`,
@@ -110,6 +135,7 @@ function batchZoom(event) {
         }
       });
       zoomCount--;
+      //console.log('Zoom Out');
     }
   }
 }
@@ -119,6 +145,7 @@ function hideZoomer() {
   const targetNode = document.getElementsByClassName(
     'batch_zoomer boxshadow'
   )[0];
+  //console.log(targetNode);
   if (targetNode) {
     targetNode.parentNode.removeChild(targetNode);
   }
