@@ -38,8 +38,9 @@ const onMutate = () => {
 const observer = new MutationObserver(onMutate);
 observer.observe(parentElement.body, mutationConfig);
 
-parentElement.addEventListener('DOMNodeInserted', hideZoomer, true)
-parentElement.addEventListener('keypress', batchZoom, true);
+
+parentElement.addEventListener('DOMNodeInserted', hideZoomer, true) // event listeners to detect when Slate's magnifier is triggered
+parentElement.addEventListener('keypress', batchZoom, true); // event listener for detecting key presses for triggering the batchZoom function with key presses
 
 // adds event listeners needed for userscript to function
 function add_Listener() {
@@ -54,7 +55,7 @@ function add_Listener() {
       el.addEventListener('contextmenu', batchZoom, true);
       el.addEventListener('mousedown', batchZoom, true);
     });
-    // needed to detect when "next" buttons, etc. are pressed to reattach listeners to the new images
+    // needed to detect when "next" buttons, etc. are pressed to reattach listeners to the new set of document images
     const buttons = document.querySelectorAll('button[type="button"]');
     buttons.forEach((el) => {
       el.addEventListener('click', () => {
@@ -140,7 +141,7 @@ function batchZoom(event) {
   }
 }
 
-/* kinda janky way to automatically close Slate's useless magnifying glass thingy*/
+/* Looks for the DOM that gets created when Slate loads its useless magnifier tool in the document viwer and deletes it before it can be loaded. */
 function hideZoomer() {
   const targetNode = document.getElementsByClassName(
     'batch_zoomer boxshadow'
